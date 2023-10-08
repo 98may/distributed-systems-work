@@ -10,15 +10,54 @@
 package swagger
 
 import (
+	"log"
 	"net/http"
+	"encoding/json"
+	"github.com/gorilla/mux"
 )
 
+type Album struct {
+	Key    string `json:"albumKey"`
+	Name   string `json:"albumName"`
+	Artist string `json:"artist"`
+}
+
 func GetAlbumByKey(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+    vars := mux.Vars(r)
+    albumID := vars["albumID"]  // Extract albumID from the URL
+
+    // Assume you have a function GetAlbum that takes an albumID and returns an Album object
+    // album, err := GetAlbum(albumID)
+    album := Album{Key: albumID, Name: "Greatest Hits", Artist: "Some Artist"}
+    // if err != nil {
+    //     http.Error(w, err.Error(), http.StatusInternalServerError)
+    //     return
+    // }
+
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(album)
 }
 
 func NewAlbum(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+    // var album Album
+    // err := json.NewDecoder(r.Body).Decode(&album)  // Parse JSON request body into Album struct
+    // if err != nil {
+    //     http.Error(w, err.Error(), http.StatusBadRequest)
+    //     return
+    // }
+
+    // Assume you have a function CreateAlbum that takes an Album object and creates a new album
+    // createdAlbum, err := CreateAlbum(album)
+    createdAlbum := Album{Key: "6789", Name: "new a", Artist: "new aa"}
+    // if err != nil {
+    //     http.Error(w, err.Error(), http.StatusInternalServerError)
+    //     return
+    // }
+
+    log.Printf("createdAlbum : %+v\n", createdAlbum)
+
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    w.WriteHeader(http.StatusCreated)
+    json.NewEncoder(w).Encode(createdAlbum)
 }
