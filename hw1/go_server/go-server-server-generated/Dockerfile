@@ -10,5 +10,5 @@ RUN go build -a -installsuffix cgo -o swagger .
 
 FROM scratch AS runtime
 COPY --from=build /go/src/swagger ./
-EXPOSE 8080/tcp
+EXPOSE 8081/tcp
 ENTRYPOINT ["./swagger"]

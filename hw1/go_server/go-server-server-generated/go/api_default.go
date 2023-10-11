@@ -10,54 +10,102 @@
 package swagger
 
 import (
-	"log"
+	// "log"
 	"net/http"
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"fmt"
+	"io"
 )
 
 type Album struct {
 	Key    string `json:"albumKey"`
-	Name   string `json:"albumName"`
+	Title   string `json:"title"`
 	Artist string `json:"artist"`
+	Year   string `json:"year"`  
+}
+
+type Response struct {
+	AlbumID   string `json:"albumID"`
+	ImageSize string `json:"imageSize"`  // String to match client's expectation
+}
+
+func getFileSize(file io.Seeker) (int64, error) {
+	position, err := file.Seek(0, io.SeekEnd)
+	if err != nil {
+		return 0, err
+	}
+	_, err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		return 0, err
+	}
+	return position, nil
 }
 
 func GetAlbumByKey(w http.ResponseWriter, r *http.Request) {
-    vars := mux.Vars(r)
-    albumID := vars["albumID"]  // Extract albumID from the URL
+	vars := mux.Vars(r)
+	albumID := vars["albumID"]  // Extract albumID from the URL
 
-    // Assume you have a function GetAlbum that takes an albumID and returns an Album object
-    // album, err := GetAlbum(albumID)
-    album := Album{Key: albumID, Name: "Greatest Hits", Artist: "Some Artist"}
-    // if err != nil {
-    //     http.Error(w, err.Error(), http.StatusInternalServerError)
-    //     return
-    // }
+	// Assume you have a function GetAlbum that takes an albumID and returns an Album object
+	// Replace this dummy data with actual data fetching logic
+	dummyAlbums := map[string]Album{
+		"1": {Key: "1", Title: "Album 1", Artist: "Artist 1", Year: "2001"},
+		"2": {Key: "2", Title: "Album 2", Artist: "Artist 2", Year: "2002"},
+	}
 
-    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-    w.WriteHeader(http.StatusOK)
-    json.NewEncoder(w).Encode(album)
+	album, albumExists := dummyAlbums[albumID]
+	if !albumExists {
+		http.Error(w, "Album not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(album)
 }
-
+ 
 func NewAlbum(w http.ResponseWriter, r *http.Request) {
-    // var album Album
-    // err := json.NewDecoder(r.Body).Decode(&album)  // Parse JSON request body into Album struct
-    // if err != nil {
-    //     http.Error(w, err.Error(), http.StatusBadRequest)
-    //     return
-    // }
+	err := r.ParseMultipartForm(10 << 20) // limit your maxMultipartMemory
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-    // Assume you have a function CreateAlbum that takes an Album object and creates a new album
-    // createdAlbum, err := CreateAlbum(album)
-    createdAlbum := Album{Key: "6789", Name: "new a", Artist: "new aa"}
-    // if err != nil {
-    //     http.Error(w, err.Error(), http.StatusInternalServerError)
-    //     return
-    // }
+	file, _, err := r.FormFile("image")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
 
-    log.Printf("createdAlbum : %+v\n", createdAlbum)
+	// profile := r.FormValue("profile")
+	// fmt.Printf("Profile: %s\n", profile)
 
-    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-    w.WriteHeader(http.StatusCreated)
-    json.NewEncoder(w).Encode(createdAlbum)
+	// var albumProfile AlbumsProfile
+	// err = json.Unmarshal([]byte(profile), &albumProfile)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
+
+	fileSize, err := getFileSize(file)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	response := Response{
+		AlbumID:   "6789",  // You might want to generate this dynamically or fetch it from somewhere
+		ImageSize: fmt.Sprintf("%d", fileSize),
+	}
+	// Assume CreateAlbum creates a new album
+	// createdAlbum := Album{Key: "6789", Title: albumProfile.Title, Artist: albumProfile.Artist}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(response)
+
+	// fmt.Printf("Response: %+v\n", response)
+	// json.NewEncoder(w).Encode(response)
 }
+ 
