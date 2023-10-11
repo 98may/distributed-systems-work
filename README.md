@@ -1,11 +1,17 @@
 # distributed-systems-work
-Assignments Repo for CS6650 Building Scalable Distributed Systems 23fall@neu
+Assignment1 Repo for CS6650 Building Scalable Distributed Systems 23fall@neu
+
+
+
+Github link: https://github.com/98may/distributed-systems-work/ 
+
+
 
 
 
 [toc]
 
-## info
+## 1: info
 
 my aws ec2 ip address: `3.80.33.155:8080`
 
@@ -35,6 +41,8 @@ mvn clean install && mvn exec:java -Dexec.mainClass="com.jenniek.clienttest.Load
 ```
 
 
+
+## 2: Servers
 
 ### Go server on aws ec2
 
@@ -91,3 +99,20 @@ systemctl status tomcat
 sudo vim /usr/share/tomcat/logs/catalina.out
 ```
 
+
+
+
+
+## 3: Clients
+
+`Usage: LoadTester <threadGroupSize> <numThreadGroups> <delay> [java|go]`
+
+
+
+
+
+part of test results:
+
+![requests](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results/requests.png)
+
+![terrible throughput](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results/terrible throughput.png)
