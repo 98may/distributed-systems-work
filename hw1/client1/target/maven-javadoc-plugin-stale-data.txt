@@ -1,0 +1,78 @@
+/Users/may/Library/Java/JavaVirtualMachines/openjdk-17/Contents/Home/bin/javadoc
+@options
+@packages
+-classpath
+'/Users/may/.m2/repository/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar:/Users/may/.m2/repository/io/swagger/core/v3/swagger-annotations/2.0.0/swagger-annotations-2.0.0.jar:/Users/may/.m2/repository/com/squareup/okhttp/okhttp/2.7.5/okhttp-2.7.5.jar:/Users/may/.m2/repository/com/squareup/okio/okio/1.6.0/okio-1.6.0.jar:/Users/may/.m2/repository/com/squareup/okhttp/logging-interceptor/2.7.5/logging-interceptor-2.7.5.jar:/Users/may/.m2/repository/com/google/code/gson/gson/2.8.1/gson-2.8.1.jar:/Users/may/.m2/repository/io/gsonfire/gson-fire/1.8.3/gson-fire-1.8.3.jar:/Users/may/.m2/repository/org/threeten/threetenbp/1.3.5/threetenbp-1.3.5.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/src/main/java:/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/generated-sources/annotations'
+-author
+-bottom
+'Copyright &#169; 2023. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'swagger-java-client 1.0.0 API'
+-use
+-version
+-windowtitle
+'swagger-java-client 1.0.0 API'
+io.swagger.client
+io.swagger.client
+io.swagger.client
+io.swagger.client
+io.swagger.client
+io.swagger.client.auth
+io.swagger.client.auth
+io.swagger.client.auth
+io.swagger.client.auth
+io.swagger.client.auth
+io.swagger.client
+io.swagger.client
+io.swagger.client
+io.swagger.client
+io.swagger.client.model
+io.swagger.client.model
+io.swagger.client.model
+io.swagger.client.model
+io.swagger.client.model
+io.swagger.client.api
+io.swagger.client
+io.swagger.client
+com.jenniek.clienttest
+com.jenniek.clienttest
+/Users/may/.m2/repository/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar = 1519208663000
+/Users/may/.m2/repository/io/swagger/core/v3/swagger-annotations/2.0.0/swagger-annotations-2.0.0.jar = 1522077293000
+/Users/may/.m2/repository/com/squareup/okhttp/okhttp/2.7.5/okhttp-2.7.5.jar = 1456500233000
+/Users/may/.m2/repository/com/squareup/okio/okio/1.6.0/okio-1.6.0.jar = 1440547193000
+/Users/may/.m2/repository/com/squareup/okhttp/logging-interceptor/2.7.5/logging-interceptor-2.7.5.jar = 1456500338000
+/Users/may/.m2/repository/com/google/code/gson/gson/2.8.1/gson-2.8.1.jar = 1496194739000
+/Users/may/.m2/repository/io/gsonfire/gson-fire/1.8.3/gson-fire-1.8.3.jar = 1523143052000
+/Users/may/.m2/repository/org/threeten/threetenbp/1.3.5/threetenbp-1.3.5.jar = 1496838034000
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/src/main/java/.DS_Store = 1696962912652
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/src/main/java = 1697177621000
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/generated-sources/annotations = 1697177626505
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/tag-search-index.js = 1697177636230
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/overview-tree.html = 1697177636156
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/module-search-index.js = 1697177636227
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/index.html = 1697177636162
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/package-search-index.js = 1697177636228
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/jquery-ui.overrides.css = 1697177636366
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/serialized-form.html = 1697177635969
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/index-all.html = 1697177636325
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/allpackages-index.html = 1697177636225
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/member-search-index.js = 1697177636229
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/script.js = 1697177636336
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/stylesheet.css = 1697177636335
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/overview-summary.html = 1697177636327
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/help-doc.html = 1697177636332
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/element-list = 1697177635887
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/allclasses-index.html = 1697177636219
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/type-search-index.js = 1697177636228
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/search.js = 1697177636358
