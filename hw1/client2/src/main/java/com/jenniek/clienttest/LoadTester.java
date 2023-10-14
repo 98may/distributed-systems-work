@@ -3,10 +3,11 @@ package com.jenniek.clienttest;
 import io.swagger.client.*;
 import io.swagger.client.api.DefaultApi;
 import io.swagger.client.model.*;
-import java.io.File;
+import java.io.*;
 import java.util.concurrent.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class LoadTester {
     private static final int INITIAL_THREAD_COUNT = 100;
@@ -14,12 +15,24 @@ public class LoadTester {
     private static final int LOAD_TEST_REQUESTS_PER_THREAD = 500;
     // private static final int MAX_RETRIES = 5;
 
-    public static void main(String[] args) {
+    private static final List<Long> GET_latencies = Collections.synchronizedList(new ArrayList<Long>());
+    private static final List<Long> POST_latencies = Collections.synchronizedList(new ArrayList<Long>());
+
+
+    public static void main(String[] args) {       
+        System.out.println("==================start=======================");
+
         if (args.length < 3) {
             System.err.println("Usage: LoadTester <threadGroupSize> <numThreadGroups> <delay> [java|go]");
             return;
         }
-
+        if (args.length > 0) {
+            System.err.print("Executing: LoadTester ");
+            for (String arg : args) {
+                System.err.print(arg + " ");
+            }
+            System.err.println(); // Move to the next line after printing all args
+        }
         int threadGroupSize = Integer.parseInt(args[0]);
         int numThreadGroups = Integer.parseInt(args[1]);
         int delay = Integer.parseInt(args[2]) * 1000;  // Convert to milliseconds
@@ -118,8 +131,9 @@ public class LoadTester {
         System.out.println("Wall Time: " + wallTime + " seconds");
         System.out.println("Throughput: " + throughput + " requests/second");
 
-
-        
+        calculateStats(GET_latencies, "GET");
+        calculateStats(POST_latencies, "POST");
+        System.out.println("==================end=======================");
     }
 
     static class ApiTask implements Runnable {
@@ -139,26 +153,79 @@ public class LoadTester {
             for (int i = 0; i < requestsPerThread; i++) {
                 try {
                     // GET request
+                    long startGetTime = System.currentTimeMillis();
                     apiInstance.getAlbumByKey("1"); // 0.1s
-
+                    long endGetTime = System.currentTimeMillis();                    
+                    GET_latencies.add(endGetTime - startGetTime);
+                    writeLog(startGetTime, "GET", endGetTime - startGetTime, 200);
 
                     // POST request
                     String imageExample4kb = "/Users/may/Desktop/neu/cs6650_distributed/shortcuts/nmtb.png"; //4kb
                     // String imageExample57kb = "/Users/may/Desktop/neu/cs6650_distributed/shortcuts/smile.png"; //57kb
-                    
                     File image = new File(imageExample4kb);
-                    // File image = new File(imageExample57kb);
                     AlbumsProfile profile = new AlbumsProfile();
                     profile.setArtist("Artist");
                     profile.setTitle("Album");
                     profile.setYear("2023");
+
+                    long startPostTime = System.currentTimeMillis();
                     apiInstance.newAlbum(image, profile);
+                    long endPostTime = System.currentTimeMillis();
+                    POST_latencies.add(endPostTime - startPostTime);
+                    writeLog(startPostTime, "POST", endPostTime - startPostTime, 201);  // Assume 201 for simplicity
+
                 } catch (ApiException e) {
                     System.err.println("@ayan     connection failed");
+                    writeLog(System.currentTimeMillis(), "GET", -1, e.getCode());
+                    writeLog(System.currentTimeMillis(), "POST", -1, e.getCode());
                 }
+            }
+
+            
+        }
+
+        private void writeLog(long startTime, String requestType, long latency, int responseCode) {
+            String record = String.format("%d, %s, %d, %d\n", startTime, requestType, latency, responseCode);
+            try {
+                // Writing to a file named "client2_logs.csv" in append mode
+                FileWriter fw = new FileWriter("logs.csv", true);
+                fw.write(record);
+                fw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 
-        
     }
+    
+    private static void calculateStats(List<Long> latencies, String requestType) {
+        Collections.sort(latencies);
+        long sum = 0;
+        for (long latency : latencies) {
+            sum += latency;
+        }
+        double mean = (double) sum / latencies.size();
+        double median = latencies.get(latencies.size() / 2);
+        double p99 = latencies.get((int) Math.ceil(0.99 * latencies.size()));
+        long max = Collections.max(latencies);
+        long min = Collections.min(latencies);
+
+        System.out.println("----- " + requestType + " request statistics -----");
+        System.out.println("Mean: " + mean + " ms");
+        System.out.println("Median: " + median + " ms");
+        System.out.println("P99: " + p99 + " ms");
+        System.out.println("Min: " + min + " ms");
+        System.out.println("Max: " + max + " ms");
+    }
+
 }
+
+/*
+Once all threads/thread groups are completed, calculate for both POST and GET:
+
+mean response time (millisecs)
+median response time (millisecs)
+p99 (99th percentile) response time. Here’s a nice article about why percentiles are important and why calculating them is not always easy. (millisecs)
+min and max response time (millisecs)
+*/
+ */
