@@ -15,6 +15,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"fmt"
+	"os"
 	"io"
 )
 
@@ -42,6 +43,14 @@ func getFileSize(file io.Seeker) (int64, error) {
 	return position, nil
 }
 
+func FileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
 func GetAlbumByKey(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	albumID := vars["albumID"]  // Extract albumID from the URL
@@ -65,11 +74,11 @@ func GetAlbumByKey(w http.ResponseWriter, r *http.Request) {
 }
  
 func NewAlbum(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(10 << 20) // limit your maxMultipartMemory
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	// err := r.ParseMultipartForm(10 << 20) // limit your maxMultipartMemory
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
 
 	file, _, err := r.FormFile("image")
 	if err != nil {
@@ -78,25 +87,30 @@ func NewAlbum(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	// profile := r.FormValue("profile")
-	// fmt.Printf("Profile: %s\n", profile)
+	// // profile := r.FormValue("profile")
+	// // fmt.Printf("Profile: %s\n", profile)
 
-	// var albumProfile AlbumsProfile
-	// err = json.Unmarshal([]byte(profile), &albumProfile)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
+	// // var albumProfile AlbumsProfile
+	// // err = json.Unmarshal([]byte(profile), &albumProfile)
+	// // if err != nil {
+	// // 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// // 	return
+	// // }
 
 	fileSize, err := getFileSize(file)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	// if(!FileExists(fileAddress)){
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
 
 	response := Response{
-		AlbumID:   "6789",  // You might want to generate this dynamically or fetch it from somewhere
+		AlbumID:   "111",  // You might want to generate this dynamically or fetch it from somewhere
 		ImageSize: fmt.Sprintf("%d", fileSize),
+		// ImageSize: "666",
 	}
 	// Assume CreateAlbum creates a new album
 	// createdAlbum := Album{Key: "6789", Title: albumProfile.Title, Artist: albumProfile.Artist}

@@ -52,17 +52,21 @@ start server: `~/tmp/server`
 
 helper:
 
-local build go server for aws ec2(linux + arm64):
+#### local build go server for aws ec2(linux + arm64):
 
- `export GOOS=linux export GOARCH=arm64 go build -o server main.go`
+ `GOOS=linux GOARCH=arm64 go build -o server main.go`
 
-and then move to ec2 ~/emp to start
+#### and then, move to ec2 ~/emp to start
+e.g.
+`scp -i /Users/may/Downloads/ec2_2.pem /Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/go_server/go-server-server-generated/server ec2-user@ec2-3-80-33-155.compute-1.amazonaws.com:~/tmp `
 
 
 
-local run go server(macOS + m1 chip): 
+##### local run go server(macOS + m1 chip): 
 
-`export GOOS=darwin export GOARCH=arm64 go run main.go`
+`GOOS=darwin GOARCH=arm64 go run ./main.go`
+
+then check http://localhost:8081/IGORTON/AlbumStore/1.0.0/albums/2 or http://localhost:8081/IGORTON/AlbumStore/1.0.0/albums/1
 
 
 
