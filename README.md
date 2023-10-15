@@ -27,6 +27,12 @@ Java get: http://3.80.33.155:8080/AlbumApp/albums/2
 
 ## 2: client design
 
+key1: Use ThreadPool to group threads
+
+key2: Use count down latch to graceful wait for threads to finish
+
+
+
 ![diagram_loadTester](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/diagram_loadTester.png
 
 <img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/uml_loadTester.png" alt="uml_loadTester" style="zoom:50%;" />
@@ -38,15 +44,19 @@ Here are some highlights:
 
 #### Java Servlet
 
-![client2_java30_tp103](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results/client2_java30_tp103.png)
+<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results/java_30_tp1863.png" alt="java_30_tp1863" style="zoom:50%;" />
+
+<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results/java_20_tp1156.png" alt="java_20_tp1156" style="zoom:50%;" />
 
 ### Go Server
 
-<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results/client2_go30_tp81.png" alt="client2_go30_tp81" style="zoom:50%;" />
+<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results/go_30_tp1075.png" alt="go_30_tp1075" style="zoom:50%;" />
 
 ### Plot of throughput by time
 
-<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results/go_30_throughtput_plot.png" alt="go_30_throughtput_plot" style="zoom:24%;" />
+
+
+
 
 ## Appendix of Command
 

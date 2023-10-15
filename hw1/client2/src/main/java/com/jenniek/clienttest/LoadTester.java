@@ -10,16 +10,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import io.swagger.client.ApiClient;
 import io.swagger.client.ApiException;
 import io.swagger.client.api.DefaultApi;
 import io.swagger.client.model.AlbumsProfile;
+
+import java.util.concurrent.*;
+import java.util.stream.*;
 
 public class LoadTester {
     private static final int INITIAL_THREAD_COUNT = 10;
@@ -74,29 +73,29 @@ public class LoadTester {
 
         // Initialization phase
         String formattedDate = sdf.format(new Date(System.currentTimeMillis()));
-        System.out.println("======new new Start Initialization phase=====");
-        System.out.println(formattedDate);
-        long t1 = System.currentTimeMillis();
+        // System.out.println("======new new Start Initialization phase=====");
+        // System.out.println(formattedDate);
+        // long t1 = System.currentTimeMillis();
 
-        ExecutorService mainExecutor = Executors.newFixedThreadPool(INITIAL_THREAD_COUNT);
-        for (int i = 0; i < INITIAL_THREAD_COUNT; i++) {
-            mainExecutor.execute(new ApiTask(IPAddr, INIT_REQUESTS_PER_THREAD));
-        }
-        mainExecutor.shutdown();
-        try {
-            mainExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        // ExecutorService mainExecutor = Executors.newFixedThreadPool(INITIAL_THREAD_COUNT);
+        // for (int i = 0; i < INITIAL_THREAD_COUNT; i++) {
+        //     mainExecutor.execute(new ApiTask(IPAddr, INIT_REQUESTS_PER_THREAD, null));
+        // }
+        // mainExecutor.shutdown();
+        // try {
+        //     mainExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        // } catch (InterruptedException e) {
+        //     e.printStackTrace();
+        // }
 
-        long t2 = System.currentTimeMillis();
-        formattedDate = sdf.format(new Date(System.currentTimeMillis()));
-        System.out.println("Initialization phase=====");
-        System.out.println(formattedDate);
+        // long t2 = System.currentTimeMillis();
+        // formattedDate = sdf.format(new Date(System.currentTimeMillis()));
+        // System.out.println("Initialization phase=====");
+        // System.out.println(formattedDate);
         
-        long wt = (t2-t1);
-        System.out.println(String.format("Init Phase - walltime = %d mill seconds", wt));
-        System.out.println(String.format("Init Phase - throughput =  %d", (INITIAL_THREAD_COUNT * INIT_REQUESTS_PER_THREAD * 1000)/wt));
+        // long wt = (t2-t1);
+        // System.out.println(String.format("Init Phase - walltime = %d mill seconds", wt));
+        // System.out.println(String.format("Init Phase - throughput =  %d", (INITIAL_THREAD_COUNT * INIT_REQUESTS_PER_THREAD * 1000)/wt));
 
 
         // Main load test phase
@@ -115,11 +114,16 @@ public class LoadTester {
             }
         }, 0, 1, TimeUnit.SECONDS);
 
-        ExecutorService executor = Executors.newFixedThreadPool(threadGroupSize);
+
+        CountDownLatch latch = new CountDownLatch(numThreadGroups * threadGroupSize);
+        // CountDownLatch latch = new CountDownLatch(numThreadGroups * threadGroupSize * LOAD_TEST_REQUESTS_PER_THREAD);
+        System.out.println("Init - latch.getCount() = " + latch.getCount());
         for (int i = 0; i < numThreadGroups; i++) {
+            ExecutorService executor = Executors.newFixedThreadPool(threadGroupSize);
             for (int j = 0; j < threadGroupSize; j++) {
-                executor.execute(new ApiTask(IPAddr, LOAD_TEST_REQUESTS_PER_THREAD));
+                executor.execute(new ApiTask(IPAddr, LOAD_TEST_REQUESTS_PER_THREAD, latch));
             }
+            executor.shutdown();
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException e) {
@@ -127,10 +131,9 @@ public class LoadTester {
             }
         }
 
-        executor.shutdown();
-
         try {
-            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+            latch.await(); // Wait until all tasks are finished
+            System.out.println("All tasks completed.");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -158,16 +161,18 @@ public class LoadTester {
         calculateStats(POST_latencies, "POST");
         writeThroughputToFile(throughputs, args[3], args[1]);
         System.out.println("==================end=======================");
-        
+        return;
     }
 
     static class ApiTask implements Runnable {
         private final String basePath;
         private final int requestsPerThread;
+        private final CountDownLatch latch;
 
-        public ApiTask(String basePath, int requestsPerThread) {
+        public ApiTask(String basePath, int requestsPerThread, CountDownLatch latch) {
             this.basePath = basePath;
             this.requestsPerThread = requestsPerThread;
+            this.latch = latch;
         }
 
         @Override
@@ -211,11 +216,14 @@ public class LoadTester {
                         System.err.println("connection failed after 5 try");
                         writeLog(sdf.format(new Date(System.currentTimeMillis())), "GET", -1, e.getCode());
                         writeLog(sdf.format(new Date(System.currentTimeMillis())), "POST", -1, e.getCode());
-                    }
+                    } 
                 }
-
             }
 
+            if(latch != null) {
+                latch.countDown();
+                // System.out.println(sdf.format(new Date(System.currentTimeMillis())) + " : latch.getCount() == left Running Threads == " + latch.getCount());
+            }
             
         }
 
@@ -223,7 +231,7 @@ public class LoadTester {
             String record = String.format("%s, %s, %d, %d\n", startTime, requestType, latency, responseCode);
             try {
                 // Writing to a file named "client2_logs.csv" in append mode
-                FileWriter fw = new FileWriter(CLIENT_LOG_PATH+"/"+server_type+"_"+s_numThreadGroups+"_client2_logs.csv", true);
+                FileWriter fw = new FileWriter(CLIENT_LOG_PATH+"/"+server_type+"_"+s_numThreadGroups+".csv", true);
                 fw.write(record);
                 fw.close();
             } catch (IOException e) {
@@ -231,6 +239,7 @@ public class LoadTester {
             }
         }
 
+        
     }
     
     private static void calculateStats(List<Long> latencies, String requestType) {
@@ -254,7 +263,7 @@ public class LoadTester {
     }
 
     private static void writeThroughputToFile(List<Long> throughputs, String server, String n) {
-        try (PrintWriter writer = new PrintWriter(new File(CLIENT_LOG_PATH+"/" +server + "_" + n +"_throughputs_obersever.csv"))) {
+        try (PrintWriter writer = new PrintWriter(new File(CLIENT_LOG_PATH+"/" +server + "_" + n +"_throughputs.csv"))) {
             StringBuilder sb = new StringBuilder();
             sb.append("Time(s),Throughput(req/s)\n");
             for (int i = 0; i < throughputs.size(); i++) {
