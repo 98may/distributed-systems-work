@@ -1,4 +1,5 @@
 io/swagger/client/ProgressRequestBody$ProgressRequestListener.class
+com/.DS_Store
 io/swagger/client/ProgressResponseBody$1.class
 io/swagger/client/auth/HttpBasicAuth.class
 io/swagger/client/api/DefaultApi$1.class
@@ -8,6 +9,7 @@ io/swagger/client/GzipRequestInterceptor$1.class
 io/swagger/client/ApiClient.class
 io/swagger/client/ProgressRequestBody.class
 io/swagger/client/JSON$LocalDateTypeAdapter.class
+.DS_Store
 io/swagger/client/api/DefaultApi$4.class
 io/swagger/client/Pair.class
 io/swagger/client/api/DefaultApi$9.class
@@ -23,6 +25,7 @@ io/swagger/client/JSON$1.class
 io/swagger/client/model/AlbumsProfile.class
 io/swagger/client/Configuration.class
 com/jenniek/clienttest/ClientTest.class
+com/jenniek/.DS_Store
 io/swagger/client/api/DefaultApi$3.class
 io/swagger/client/auth/OAuth.class
 io/swagger/client/JSON.class
@@ -45,5 +48,6 @@ io/swagger/client/JSON$OffsetDateTimeTypeAdapter.class
 io/swagger/client/api/DefaultApi.class
 io/swagger/client/ProgressResponseBody$ProgressListener.class
 io/swagger/client/api/DefaultApi$5.class
+com/jenniek/clienttest/LoadTester$1.class
 io/swagger/client/api/DefaultApi$8.class
 io/swagger/client/auth/OAuthFlow.class

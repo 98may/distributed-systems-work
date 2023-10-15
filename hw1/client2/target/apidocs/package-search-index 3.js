@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.jenniek.clienttest"},{"l":"io.swagger.client"},{"l":"io.swagger.client.api"},{"l":"io.swagger.client.auth"},{"l":"io.swagger.client.model"}];updateSearchResults();

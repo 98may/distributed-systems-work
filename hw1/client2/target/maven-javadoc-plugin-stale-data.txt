@@ -7,14 +7,14 @@
 'UTF-8'
 -protected
 -sourcepath
-'/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/src/main/java:/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/generated-sources/annotations'
+'/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/src/main/java:/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/generated-sources/annotations'
 -author
 -bottom
 'Copyright &#169; 2023. All rights reserved.'
 -charset
 'UTF-8'
 -d
-'/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs'
+'/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs'
 -docencoding
 'UTF-8'
 -doctitle
@@ -55,24 +55,24 @@ com.jenniek.clienttest
 /Users/may/.m2/repository/com/google/code/gson/gson/2.8.1/gson-2.8.1.jar = 1496194739000
 /Users/may/.m2/repository/io/gsonfire/gson-fire/1.8.3/gson-fire-1.8.3.jar = 1523143052000
 /Users/may/.m2/repository/org/threeten/threetenbp/1.3.5/threetenbp-1.3.5.jar = 1496838034000
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/src/main/java/.DS_Store = 1696962912652
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/src/main/java = 1697177621000
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/generated-sources/annotations = 1697177626505
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/tag-search-index.js = 1697177636230
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/overview-tree.html = 1697177636156
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/module-search-index.js = 1697177636227
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/index.html = 1697177636162
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/package-search-index.js = 1697177636228
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/jquery-ui.overrides.css = 1697177636366
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/serialized-form.html = 1697177635969
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/index-all.html = 1697177636325
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/allpackages-index.html = 1697177636225
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/member-search-index.js = 1697177636229
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/script.js = 1697177636336
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/stylesheet.css = 1697177636335
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/overview-summary.html = 1697177636327
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/help-doc.html = 1697177636332
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/element-list = 1697177635887
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/allclasses-index.html = 1697177636219
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/type-search-index.js = 1697177636228
-/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java-client-generated/target/apidocs/search.js = 1697177636358
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/src/main/java/.DS_Store = 1696962912652
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/src/main/java = 1697281472000
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/generated-sources/annotations = 1697281472855
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/tag-search-index.js = 1697281483615
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/overview-tree.html = 1697281483529
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/module-search-index.js = 1697281483612
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/index.html = 1697281483534
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/package-search-index.js = 1697281483612
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/jquery-ui.overrides.css = 1697281483747
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/serialized-form.html = 1697281483341
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/index-all.html = 1697281483707
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/allpackages-index.html = 1697281483610
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/member-search-index.js = 1697281483614
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/script.js = 1697281483716
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/stylesheet.css = 1697281483716
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/overview-summary.html = 1697281483709
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/help-doc.html = 1697281483713
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/element-list = 1697281483266
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/allclasses-index.html = 1697281483605
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/type-search-index.js = 1697281483613
+/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/client2/target/apidocs/search.js = 1697281483740

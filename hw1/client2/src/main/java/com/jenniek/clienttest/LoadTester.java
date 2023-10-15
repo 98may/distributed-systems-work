@@ -1,22 +1,42 @@
 package com.jenniek.clienttest;
 
-import io.swagger.client.*;
-import io.swagger.client.api.DefaultApi;
-import io.swagger.client.model.*;
-import java.io.*;
-import java.util.concurrent.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.swagger.client.ApiClient;
+import io.swagger.client.ApiException;
+import io.swagger.client.api.DefaultApi;
+import io.swagger.client.model.AlbumsProfile;
+
 public class LoadTester {
-    private static final int INITIAL_THREAD_COUNT = 100;
+    private static final int INITIAL_THREAD_COUNT = 10;
     private static final int INIT_REQUESTS_PER_THREAD = 100;
-    private static final int LOAD_TEST_REQUESTS_PER_THREAD = 500;
-    // private static final int MAX_RETRIES = 5;
+    private static final int LOAD_TEST_REQUESTS_PER_THREAD = 1000;
+    private static final int MAX_RETRIES = 5;
 
     private static final List<Long> GET_latencies = Collections.synchronizedList(new ArrayList<Long>());
     private static final List<Long> POST_latencies = Collections.synchronizedList(new ArrayList<Long>());
+
+    private static final AtomicLong requestCounter = new AtomicLong(0);
+    private static final List<Long> throughputs = Collections.synchronizedList(new ArrayList<Long>());
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final String CLIENT_LOG_PATH = "/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results";
+
+    private static String server_type = "";    
+    private static String s_numThreadGroups = "";
 
 
     public static void main(String[] args) {       
@@ -35,6 +55,7 @@ public class LoadTester {
         }
         int threadGroupSize = Integer.parseInt(args[0]);
         int numThreadGroups = Integer.parseInt(args[1]);
+        s_numThreadGroups = args[1];
         int delay = Integer.parseInt(args[2]) * 1000;  // Convert to milliseconds
 
         String javaServletAddress = "http://3.80.33.155:8080/AlbumApp";
@@ -42,6 +63,7 @@ public class LoadTester {
         String IPAddr = javaServletAddress;  // Default to Java servlet address
 
         if (args.length > 3) {
+            server_type = args[3];
             if ("go".equals(args[3])) {
                 IPAddr = goServerAddress;  // Switch to Go servlet address
             } else if (!"java".equals(args[3])) {
@@ -51,13 +73,10 @@ public class LoadTester {
         }
 
         // Initialization phase
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String formattedDate = sdf.format(new Date(System.currentTimeMillis()));
-        long t1 = System.currentTimeMillis();
         System.out.println("======new new Start Initialization phase=====");
         System.out.println(formattedDate);
-
-
+        long t1 = System.currentTimeMillis();
 
         ExecutorService mainExecutor = Executors.newFixedThreadPool(INITIAL_THREAD_COUNT);
         for (int i = 0; i < INITIAL_THREAD_COUNT; i++) {
@@ -69,36 +88,35 @@ public class LoadTester {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
         long t2 = System.currentTimeMillis();
         formattedDate = sdf.format(new Date(System.currentTimeMillis()));
-        System.out.println("====new End Initialization phase=====");
+        System.out.println("Initialization phase=====");
         System.out.println(formattedDate);
         
         long wt = (t2-t1);
-        System.out.println(String.format("walltime = %d mill seconds", wt));
-        System.out.println(String.format("throughput = walltime/requests() = %d", (INITIAL_THREAD_COUNT * INIT_REQUESTS_PER_THREAD * 1000)/wt));
+        System.out.println(String.format("Init Phase - walltime = %d mill seconds", wt));
+        System.out.println(String.format("Init Phase - throughput =  %d", (INITIAL_THREAD_COUNT * INIT_REQUESTS_PER_THREAD * 1000)/wt));
 
-        // Start measuring time
-        long startTime = System.currentTimeMillis();
 
         // Main load test phase
         System.out.println("================Start Main load test phase================");
+        long startTime = System.currentTimeMillis();
 
-        // System.out.println(numThreadGroups);
-        // System.out.println(threadGroupSize);
-        // System.out.println(LOAD_TEST_REQUESTS_PER_THREAD);
-        // System.out.println(IPAddr);
-        
         formattedDate = sdf.format(new Date(System.currentTimeMillis()));
         System.out.println(formattedDate);
 
+        // Scheduled task to log throughput every second.
+        ScheduledExecutorService throughputs_observer = Executors.newScheduledThreadPool(1);
+        throughputs_observer.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                throughputs.add(requestCounter.getAndSet(0)); // Log and reset counter.
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+
         ExecutorService executor = Executors.newFixedThreadPool(threadGroupSize);
         for (int i = 0; i < numThreadGroups; i++) {
-            // System.out.println("------numThreadGroup # ------");
-            System.out.println(i);
-
-            formattedDate = sdf.format(new Date(System.currentTimeMillis()));
-            System.out.println(formattedDate);
             for (int j = 0; j < threadGroupSize; j++) {
                 executor.execute(new ApiTask(IPAddr, LOAD_TEST_REQUESTS_PER_THREAD));
             }
@@ -107,11 +125,6 @@ public class LoadTester {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            formattedDate = sdf.format(new Date(System.currentTimeMillis()));
-            System.out.println(formattedDate);
-            System.out.println(i);
-            // System.out.println("-------next numThreadGroup # ------");
         }
 
         executor.shutdown();
@@ -121,19 +134,31 @@ public class LoadTester {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // End measuring time
+
+        throughputs_observer.shutdown();
+
         long endTime = System.currentTimeMillis();
         
         // Calculate and output results
         long wallTime = (endTime - startTime) / 1000;
         long totalRequests = (long) threadGroupSize * numThreadGroups * LOAD_TEST_REQUESTS_PER_THREAD * 2;  // 2 for both POST and GET
         long throughput = totalRequests / wallTime;
-        System.out.println("Wall Time: " + wallTime + " seconds");
+        if (args.length > 0) {
+            System.err.print("Executing: LoadTester ");
+            for (String arg : args) {
+                System.err.print(arg + " ");
+            }
+            System.err.println(); 
+        }
+        System.out.println("totalRequests: " + totalRequests );
+        System.out.println(sdf.format(new Date(startTime)) + " - " + sdf.format(new Date(endTime)));  
+        System.out.println("Wall Time: " + wallTime + " seconds");        
         System.out.println("Throughput: " + throughput + " requests/second");
-
         calculateStats(GET_latencies, "GET");
         calculateStats(POST_latencies, "POST");
+        writeThroughputToFile(throughputs, args[3], args[1]);
         System.out.println("==================end=======================");
+        
     }
 
     static class ApiTask implements Runnable {
@@ -150,45 +175,55 @@ public class LoadTester {
             ApiClient apiClient = new ApiClient();
             apiClient.setBasePath(basePath);
             DefaultApi apiInstance = new DefaultApi(apiClient);
+
             for (int i = 0; i < requestsPerThread; i++) {
-                try {
-                    // GET request
-                    long startGetTime = System.currentTimeMillis();
-                    apiInstance.getAlbumByKey("1"); // 0.1s
-                    long endGetTime = System.currentTimeMillis();                    
-                    GET_latencies.add(endGetTime - startGetTime);
-                    writeLog(startGetTime, "GET", endGetTime - startGetTime, 200);
+                boolean success = false;
+                int try_time = 0;
+                while(try_time < MAX_RETRIES && !success){
+                    try_time++;
+                    try {
+                        // GET request
+                        long startGetTime = System.currentTimeMillis();
+                        apiInstance.getAlbumByKey("1"); // 0.1s
+                        long endGetTime = System.currentTimeMillis();   
+                        requestCounter.incrementAndGet();                 
+                        GET_latencies.add(endGetTime - startGetTime);
 
-                    // POST request
-                    String imageExample4kb = "/Users/may/Desktop/neu/cs6650_distributed/shortcuts/nmtb.png"; //4kb
-                    // String imageExample57kb = "/Users/may/Desktop/neu/cs6650_distributed/shortcuts/smile.png"; //57kb
-                    File image = new File(imageExample4kb);
-                    AlbumsProfile profile = new AlbumsProfile();
-                    profile.setArtist("Artist");
-                    profile.setTitle("Album");
-                    profile.setYear("2023");
+                        writeLog(sdf.format(new Date(startGetTime)), "GET", endGetTime - startGetTime, 200);
 
-                    long startPostTime = System.currentTimeMillis();
-                    apiInstance.newAlbum(image, profile);
-                    long endPostTime = System.currentTimeMillis();
-                    POST_latencies.add(endPostTime - startPostTime);
-                    writeLog(startPostTime, "POST", endPostTime - startPostTime, 201);  // Assume 201 for simplicity
+                        // POST request
+                        String imageExample4kb = "/Users/may/Desktop/neu/cs6650_distributed/shortcuts/nmtb.png"; //4kb
+                        // String imageExample57kb = "/Users/may/Desktop/neu/cs6650_distributed/shortcuts/smile.png"; //57kb
+                        File image = new File(imageExample4kb);
+                        AlbumsProfile profile = new AlbumsProfile();
+                        profile.setArtist("Artist");
+                        profile.setTitle("Album");
+                        profile.setYear("2023");
 
-                } catch (ApiException e) {
-                    System.err.println("@ayan     connection failed");
-                    writeLog(System.currentTimeMillis(), "GET", -1, e.getCode());
-                    writeLog(System.currentTimeMillis(), "POST", -1, e.getCode());
+                        long startPostTime = System.currentTimeMillis();
+                        apiInstance.newAlbum(image, profile);
+                        long endPostTime = System.currentTimeMillis();
+                        requestCounter.incrementAndGet();
+                        POST_latencies.add(endPostTime - startPostTime);
+                        writeLog(sdf.format(new Date(startPostTime)), "POST", endPostTime - startPostTime, 201);  // Assume 201 for simplicity
+                        success = true;
+                    } catch (ApiException e) {
+                        System.err.println("connection failed after 5 try");
+                        writeLog(sdf.format(new Date(System.currentTimeMillis())), "GET", -1, e.getCode());
+                        writeLog(sdf.format(new Date(System.currentTimeMillis())), "POST", -1, e.getCode());
+                    }
                 }
+
             }
 
             
         }
 
-        private void writeLog(long startTime, String requestType, long latency, int responseCode) {
-            String record = String.format("%d, %s, %d, %d\n", startTime, requestType, latency, responseCode);
+        private void writeLog(String startTime, String requestType, long latency, int responseCode) {
+            String record = String.format("%s, %s, %d, %d\n", startTime, requestType, latency, responseCode);
             try {
                 // Writing to a file named "client2_logs.csv" in append mode
-                FileWriter fw = new FileWriter("logs.csv", true);
+                FileWriter fw = new FileWriter(CLIENT_LOG_PATH+"/"+server_type+"_"+s_numThreadGroups+"_client2_logs.csv", true);
                 fw.write(record);
                 fw.close();
             } catch (IOException e) {
@@ -218,14 +253,17 @@ public class LoadTester {
         System.out.println("Max: " + max + " ms");
     }
 
+    private static void writeThroughputToFile(List<Long> throughputs, String server, String n) {
+        try (PrintWriter writer = new PrintWriter(new File(CLIENT_LOG_PATH+"/" +server + "_" + n +"_throughputs_obersever.csv"))) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Time(s),Throughput(req/s)\n");
+            for (int i = 0; i < throughputs.size(); i++) {
+                sb.append(i).append(',').append(throughputs.get(i)).append('\n');
+            }
+            writer.write(sb.toString());
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 }
-
-/*
-Once all threads/thread groups are completed, calculate for both POST and GET:
-
-mean response time (millisecs)
-median response time (millisecs)
-p99 (99th percentile) response time. Here’s a nice article about why percentiles are important and why calculating them is not always easy. (millisecs)
-min and max response time (millisecs)
-*/
- */

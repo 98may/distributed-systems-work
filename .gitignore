@@ -5,19 +5,15 @@
 
 # But not these files...
 !.gitignore
-README.md
-hw1/go_server/go-server-server-generated/go/api_default.go
-hw1/go_server/go-server-server-generated/go/routers.go
-hw1/java_servlet/AlbumApp/src/main/java/com/jenniek/*
-hw1/client1/src/main/java/com/jenniek/clienttest/*
-hw1/client2/src/main/java/com/jenniek/clienttest/*
+# README.md
+# hw1/go_server/go-server-server-generated/go/api_default.go
+# hw1/go_server/go-server-server-generated/go/routers.go
+# hw1/java_servlet/AlbumApp/src/main/java/com/jenniek/*
+# hw1/client1/src/main/java/com/jenniek/clienttest/*
+# hw1/client2/src/main/java/com/jenniek/clienttest/*
 # hw1/java-client-generated/*
-hw1/test_results/*
+# hw1/test_results/*
 # etc...
 
 # ...even if they are in subdirectories
-!*/
-
-# if the files to be tracked are in subdirectories
-# !*/a/b/file1.txt
-# !*/a/b/c/*
+# !*/
