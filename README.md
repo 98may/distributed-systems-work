@@ -54,7 +54,7 @@ Here are some highlights:
 
 ### Plot of throughput by time
 
-
+![java_30_throughputs](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results/java_30_throughputs.png)
 
 
 
