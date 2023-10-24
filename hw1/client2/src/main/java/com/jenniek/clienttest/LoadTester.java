@@ -7,28 +7,29 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.*;
 
 public class LoadTester {
-    private static final List<Long> GET_latencies = Collections.synchronizedList(new ArrayList<Long>());
-    private static final List<Long> POST_latencies = Collections.synchronizedList(new ArrayList<Long>());
+    private List<Long> GET_latencies = Collections.synchronizedList(new ArrayList<Long>());
+    private List<Long> POST_latencies = Collections.synchronizedList(new ArrayList<Long>());
 
-    private static final AtomicLong requestCounter = new AtomicLong(0);
-    private static final List<Long> throughputs = Collections.synchronizedList(new ArrayList<Long>());
+    private AtomicLong requestCounter = new AtomicLong(0);
+    private List<Long> throughputs = Collections.synchronizedList(new ArrayList<Long>());
 
-    private static String server_type = "java"; // default server is Java servlet    
-    private static String IPAddr = Config.javaServletAddress;
-    private static String s_numThreadGroups = "";
+    private String server_type = "java"; // default server is Java servlet    
+    private String IPAddr = Config.javaServletAddress;
+    private String s_numThreadGroups = "";
 
-    private static int threadGroupSize;
-    private static int numThreadGroups;
-    private static int delay;
+    private int threadGroupSize;
+    private int numThreadGroups;
+    private int delay;
 
 
     public static void main(String[] args) {
-        parse(args);
-        startUp();
-        mainLoad();
+        LoadTester loadTester = new LoadTester();
+        loadTester.parse(args);
+        loadTester.startUp();
+        loadTester.mainLoad();
     }
 
-    private static void parse(String[] args) {
+    private void parse(String[] args) {
         // 1. handle illegal args
         if (args.length < 3) {
             System.err.println("Usage: LoadTester <threadGroupSize> <numThreadGroups> <delay> [java|go]");
@@ -59,7 +60,7 @@ public class LoadTester {
         }
     }
 
-    private static void startUp(){
+    private void startUp(){
         System.out.println("====== Start startup Phase =====");
         System.out.println(Utilities.getFormattedDate());
         long t1 = System.currentTimeMillis();
@@ -82,7 +83,7 @@ public class LoadTester {
         System.out.println("====== End startup Phase =====");
     }
 
-    private static void mainLoad(){
+    private void mainLoad(){
         System.out.println("\n====== Start Main Load Phase ======");
         System.out.println(Utilities.getFormattedDate());
         long startTime = System.currentTimeMillis();
