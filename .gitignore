@@ -1,5 +1,4 @@
-.DS_Store
-
+hw1/.DS_Store
 # Ignore everything
 *
 
@@ -10,7 +9,7 @@
 # hw1/go_server/go-server-server-generated/go/routers.go
 # hw1/java_servlet/AlbumApp/src/main/java/com/jenniek/*
 # hw1/client1/src/main/java/com/jenniek/clienttest/*
-# hw1/client2/src/main/java/com/jenniek/clienttest/*
+hw1/client2/src/main/java/com/jenniek/clienttest/*
 # hw1/java-client-generated/*
 # hw1/test_results/*
 # etc...
