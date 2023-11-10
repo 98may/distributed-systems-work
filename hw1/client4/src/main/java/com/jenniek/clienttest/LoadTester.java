@@ -100,11 +100,11 @@ public class LoadTester {
         // 2. main load
         CountDownLatch latch = new CountDownLatch(numThreadGroups * threadGroupSize);
         for (int i = 0; i < numThreadGroups; i++) {
-            ExecutorService executor = Executors.newFixedThreadPool(threadGroupSize);
             for (int j = 0; j < threadGroupSize; j++) {
-                executor.execute(new ApiTask(IPAddr, Config.LOAD_TEST_REQUESTS_PER_THREAD, latch, server_type, s_numThreadGroups, GET_latencies, POST_latencies, requestCounter));
+                // Create a new thread with an ApiTask instance and start the thread
+                Thread t = new Thread(new ApiTask(IPAddr, Config.LOAD_TEST_REQUESTS_PER_THREAD, latch, server_type, s_numThreadGroups, GET_latencies, POST_latencies, requestCounter));
+                t.start();
             }
-            executor.shutdown();
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException e) {
@@ -112,11 +112,12 @@ public class LoadTester {
             }
         }
         try {
-            latch.await(); // Wait until all tasks are finished
+            latch.await();  // Wait until all tasks are finished
             System.out.println("All tasks completed.");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
         // 3. stop logging throughput
         throughputs_observer.shutdown();
 

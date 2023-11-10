@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 # Load data
 CLIENT_LOG_PATH = "/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results" + "/client4_better_log";
 
-data = pd.read_csv(CLIENT_LOG_PATH+'/java_30_throughputs2.csv')
+data = pd.read_csv(CLIENT_LOG_PATH+'/java_30_throughputs.csv')
 
 # Create a scatter plot
 plt.plot(data['Time(s)'], data['Throughput(req/s)'], marker='o', linestyle='-', markersize=2)

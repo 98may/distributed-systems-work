@@ -85,11 +85,13 @@ public class LoadTester {
         // 2. main load
         CountDownLatch latch = new CountDownLatch(numThreadGroups * threadGroupSize);
         for (int i = 0; i < numThreadGroups; i++) {
-            ExecutorService executor = Executors.newFixedThreadPool(threadGroupSize);
+            // ExecutorService executor = Executors.newFixedThreadPool(threadGroupSize);
+
             for (int j = 0; j < threadGroupSize; j++) {
-                executor.execute(new ApiTask(IPAddr, Config.LOAD_TEST_REQUESTS_PER_THREAD, latch, server_type, s_numThreadGroups));
+                Thread t = new ApiTask(IPAddr, Config.LOAD_TEST_REQUESTS_PER_THREAD, latch, server_type, s_numThreadGroups);
+                t.start();
             }
-            executor.shutdown();
+            // executor.shutdown();
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException e) {

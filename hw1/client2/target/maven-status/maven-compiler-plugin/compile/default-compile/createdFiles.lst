@@ -12,7 +12,6 @@ io/swagger/client/JSON$LocalDateTypeAdapter.class
 io/swagger/client/api/DefaultApi$4.class
 io/swagger/client/Pair.class
 io/swagger/client/api/DefaultApi$9.class
-com/jenniek/clienttest/OldLoadTester$1.class
 io/swagger/client/ApiClient$1.class
 io/swagger/client/JSON$DateTypeAdapter.class
 io/swagger/client/GzipRequestInterceptor$2.class
@@ -28,8 +27,6 @@ io/swagger/client/api/DefaultApi$3.class
 io/swagger/client/auth/OAuth.class
 io/swagger/client/JSON.class
 io/swagger/client/model/ErrorMsg.class
-com/jenniek/clienttest/OldLoadTester.class
-com/jenniek/clienttest/OldLoadTester$ApiTask.class
 io/swagger/client/model/AlbumInfo.class
 io/swagger/client/ProgressResponseBody.class
 io/swagger/client/ApiCallback.class
