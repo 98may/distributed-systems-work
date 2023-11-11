@@ -70,7 +70,7 @@ local
 // local build java servlet in Maven project to generate the AlbumApp.war file
 mvn clean install
 // scp java servlet - AlbumApp.war to aws ec2
-scp -i /Users/may/Downloads/ec2_2.pem /Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/java_servlet/AlbumApp/target/AlbumApp.war ec2-user@ec2-3-80-33-155.compute-1.amazonaws.com:~/tmp
+scp -i /Users/may/Downloads/ec2_2.pem /Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/java_servlet/AlbumApp/target/AlbumApp.war ec2-user@ec2-3-80-33-155.compute-1.amazonaws.com:~/tmp
   
   /* Go server */
 // local run go server(macOS + m1 chip) for local tests

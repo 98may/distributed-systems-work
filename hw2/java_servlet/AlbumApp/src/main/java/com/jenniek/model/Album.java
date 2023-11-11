@@ -1,30 +1,32 @@
 package com.jenniek.model;
 
 public class Album {
-    private String albumKey;
+    private String albumID; // Changed from albumKey to albumID to match your table schema
     private String title;
     private String artist;
     private String year;
+    private Long imageSize; 
 
-    // Default constructor for deserialization
     public Album() {
     }
 
     // Constructor to initialize all fields
-    public Album(String albumKey, String title, String artist, String year) {
-        this.albumKey = albumKey;
+    public Album(String albumID, String title, String artist, String year, Long imageSize) {
+        this.albumID = albumID;
         this.title = title;
         this.artist = artist;
         this.year = year;
+        this.imageSize = imageSize; // Initialize the imageSize
     }
 
-    // Getter and Setter for albumKey
-    public String getAlbumKey() {
-        return albumKey;
+    // Getter for albumID
+    public String getAlbumID() {
+        return albumID;
     }
 
-    public void setAlbumKey(String albumKey) {
-        this.albumKey = albumKey;
+    // Setter for albumID
+    public void setAlbumID(String albumID) {
+        this.albumID = albumID;
     }
 
     // Getter and Setter for title
@@ -54,13 +56,23 @@ public class Album {
         this.year = year;
     }
 
+    // Getter and Setter for imageSize
+    public Long getImageSize() {
+        return imageSize;
+    }
+
+    public void setImageSize(Long imageSize) {
+        this.imageSize = imageSize;
+    }
+
     @Override
     public String toString() {
         return "Album{" +
-                "albumKey='" + albumKey + '\'' +
+                "albumID='" + albumID + '\'' +
                 ", title='" + title + '\'' +
                 ", artist='" + artist + '\'' +
                 ", year='" + year + '\'' +
+                ", imageSize=" + imageSize +
                 '}';
     }
 }

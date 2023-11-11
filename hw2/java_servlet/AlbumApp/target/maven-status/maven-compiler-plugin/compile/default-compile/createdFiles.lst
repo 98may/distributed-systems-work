@@ -1,5 +1,5 @@
 com/jenniek/model/AlbumsProfile.class
 com/jenniek/servlet/AlbumServlet.class
+com/jenniek/servlet/Config.class
 com/jenniek/servlet/AlbumServlet$Response.class
 com/jenniek/model/Album.class
-com/jenniek/servlet/AlbumServlet$1.class
