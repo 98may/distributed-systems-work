@@ -11,6 +11,7 @@ public class LoadTester {
     private ConcurrentLinkedQueue<Long> GET_latencies = new ConcurrentLinkedQueue<>();
     private ConcurrentLinkedQueue<Long> POST_latencies = new ConcurrentLinkedQueue<>();
     private AtomicLong requestCounter = new AtomicLong(0);
+    private AtomicLong failedRequestCounter = new AtomicLong(0);
     private ConcurrentLinkedQueue<Long> throughputs = new ConcurrentLinkedQueue<>();
     
     private String server_type = "java"; // default server is Java servlet    
@@ -102,7 +103,7 @@ public class LoadTester {
         for (int i = 0; i < numThreadGroups; i++) {
             for (int j = 0; j < threadGroupSize; j++) {
                 // Create a new thread with an ApiTask instance and start the thread
-                Thread t = new Thread(new ApiTask(IPAddr, Config.LOAD_TEST_REQUESTS_PER_THREAD, latch, server_type, s_numThreadGroups, GET_latencies, POST_latencies, requestCounter));
+                Thread t = new Thread(new ApiTask(IPAddr, Config.LOAD_TEST_REQUESTS_PER_THREAD, latch, server_type, s_numThreadGroups, GET_latencies, POST_latencies, requestCounter, failedRequestCounter));
                 t.start();
             }
             try {
@@ -138,8 +139,11 @@ public class LoadTester {
         
         long wallTime = (endTime - startTime) / 1000;
         long totalRequests = (long) threadGroupSize * numThreadGroups * Config.LOAD_TEST_REQUESTS_PER_THREAD * 2;  // 2 for both POST and GET
+        long failedRequests = failedRequestCounter.get();
         long throughput = totalRequests / wallTime;
-        System.out.println("totalRequests: " + totalRequests );
+        System.out.println("totalRequests: " + totalRequests +", Failure Rate: " + (failedRequests*1.0 / totalRequests));
+        System.out.println("failedRequets: " + failedRequestCounter );
+        System.out.println("successfulRequets: " + (totalRequests - failedRequests) );
         System.out.println(Utilities.getFormattedDate(startTime) + " - " + Utilities.getFormattedDate(endTime));  
         System.out.println("Wall Time: " + wallTime + " seconds");        
         System.out.println("Throughput: " + throughput + " requests/second");

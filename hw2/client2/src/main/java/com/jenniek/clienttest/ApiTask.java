@@ -29,11 +29,12 @@ public class ApiTask implements Runnable {
     private final String server_type;
     private final String s_numThreadGroups;
     AtomicLong requestCounter;
+    AtomicLong failedRequestCounter;
 
     private ConcurrentLinkedQueue<Long> GET_latencies;
     private ConcurrentLinkedQueue<Long> POST_latencies;
 
-    public ApiTask(String basePath, int requestsPerThread, CountDownLatch latch, String server_type, String s_numThreadGroups, ConcurrentLinkedQueue<Long> GET_latencies, ConcurrentLinkedQueue<Long> POST_latencies, AtomicLong requestCounter) {
+    public ApiTask(String basePath, int requestsPerThread, CountDownLatch latch, String server_type, String s_numThreadGroups, ConcurrentLinkedQueue<Long> GET_latencies, ConcurrentLinkedQueue<Long> POST_latencies, AtomicLong requestCounter, AtomicLong failedRequestCounter) {
         this.basePath = basePath;
         this.requestsPerThread = requestsPerThread;
         this.latch = latch;
@@ -42,6 +43,7 @@ public class ApiTask implements Runnable {
         this.GET_latencies = GET_latencies;
         this.POST_latencies = POST_latencies;
         this.requestCounter = requestCounter;
+        this.failedRequestCounter = failedRequestCounter;
     }
 
     @Override
@@ -82,10 +84,13 @@ public class ApiTask implements Runnable {
                     Utilities.writeLog(Utilities.getFormattedDate(startPostTime), "POST", endPostTime - startPostTime, 201, server_type, s_numThreadGroups);  // Assume 201 for simplicity
                     success = true;
                 } catch (ApiException e) {
-                    System.err.println("connection failed after 5 try");
                     Utilities.writeLog(Utilities.getFormattedDate(), "GET", -1, e.getCode(), server_type, s_numThreadGroups);
                     Utilities.writeLog(Utilities.getFormattedDate(), "POST", -1, e.getCode(), server_type, s_numThreadGroups);
                 } 
+            }
+            if(!success){
+                failedRequestCounter.incrementAndGet();
+                System.err.println("connection failed after 5 try");
             }
         }
 
