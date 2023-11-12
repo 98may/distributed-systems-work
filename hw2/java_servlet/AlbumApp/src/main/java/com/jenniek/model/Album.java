@@ -5,18 +5,17 @@ public class Album {
     private String title;
     private String artist;
     private String year;
-    private Long imageSize; 
+    private String image; 
 
     public Album() {
     }
 
-    // Constructor to initialize all fields
-    public Album(String albumID, String title, String artist, String year, Long imageSize) {
+    public Album(String albumID, String title, String artist, String year, String image) {
         this.albumID = albumID;
         this.title = title;
         this.artist = artist;
         this.year = year;
-        this.imageSize = imageSize; // Initialize the imageSize
+        this.image = image; 
     }
 
     // Getter for albumID
@@ -57,12 +56,12 @@ public class Album {
     }
 
     // Getter and Setter for imageSize
-    public Long getImageSize() {
-        return imageSize;
+    public String getImage() {
+        return image;
     }
 
-    public void setImageSize(Long imageSize) {
-        this.imageSize = imageSize;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     @Override
@@ -72,7 +71,7 @@ public class Album {
                 ", title='" + title + '\'' +
                 ", artist='" + artist + '\'' +
                 ", year='" + year + '\'' +
-                ", imageSize=" + imageSize +
+                ", image=" + image +
                 '}';
     }
 }

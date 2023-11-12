@@ -60,7 +60,7 @@ public class ApiTask implements Runnable {
                 try {
                     // GET request
                     long startGetTime = System.currentTimeMillis();
-                    apiInstance.getAlbumByKey("1");
+                    apiInstance.getAlbumByKey("1230");
                     long endGetTime = System.currentTimeMillis();   
                     requestCounter.incrementAndGet();                 
                     GET_latencies.add(endGetTime - startGetTime);
@@ -72,12 +72,14 @@ public class ApiTask implements Runnable {
                     // String imageExample57kb = "/Users/may/Desktop/neu/cs6650_distributed/shortcuts/smile.png"; //57kb
                     File image = new File(imageExample4kb);
                     AlbumsProfile profile = new AlbumsProfile();
-                    profile.setArtist("Artist");
-                    profile.setTitle("Album");
-                    profile.setYear("2023");
+                    profile.setArtist("rich Artist");
+                    profile.setTitle("rich Album Title");
+                    profile.setYear("1998");
 
                     long startPostTime = System.currentTimeMillis();
                     apiInstance.newAlbum(image, profile);
+
+
                     long endPostTime = System.currentTimeMillis();
                     requestCounter.incrementAndGet();
                     POST_latencies.add(endPostTime - startPostTime);

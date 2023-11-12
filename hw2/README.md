@@ -66,11 +66,15 @@ local
 // ssh to aws ec2
 /Users/may/Desktop/neu/cs6650_distributed/shortcuts/ssh_ec2.sh
 
+// mysql to aws rdb
+mysql -h dsdatabase.ccfcharlh91s.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
+
   /* java servlet */
 // local build java servlet in Maven project to generate the AlbumApp.war file
 mvn clean install
 // scp java servlet - AlbumApp.war to aws ec2
 scp -i /Users/may/Downloads/ec2_2.pem /Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/java_servlet/AlbumApp/target/AlbumApp.war ec2-user@ec2-3-80-33-155.compute-1.amazonaws.com:~/tmp
+
   
   /* Go server */
 // local run go server(macOS + m1 chip) for local tests
@@ -99,6 +103,10 @@ sudo systemctl stop tomcat
 systemctl status tomcat
   
 sudo vim /usr/share/tomcat/logs/catalina.out
+
+// see log to debug java servlet
+sudo bash -c 'echo > /usr/share/tomcat/logs/catalina.out'
+sudo grep "album" /usr/share/tomcat/logs/catalina.out
   
 // go server
 ~/tmp/server

@@ -1,6 +1,7 @@
 package com.jenniek.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.jenniek.model.*;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -19,6 +20,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+
+import java.util.*;
+import java.nio.file.Paths;
 
 @WebServlet("/albums/*")
 @MultipartConfig
@@ -59,7 +63,7 @@ public class AlbumServlet extends HttpServlet {
             if (!rs.next()) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Album not found + albumID=" + albumID);
             } else {
-                Album album = new Album(rs.getString("album_id"), rs.getString("name"), rs.getString("artist"), rs.getString("release_year"), rs.getLong("image_size"));
+                Album album = new Album(rs.getString("album_id"), rs.getString("name"), rs.getString("artist"), rs.getString("release_year"), rs.getString("image"));
                 response.setContentType("application/json; charset=UTF-8");
                 response.setStatus(HttpServletResponse.SC_OK);
                 objectMapper.writeValue(response.getOutputStream(), album);
@@ -73,39 +77,67 @@ public class AlbumServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Get the image part
-        Part imagePart = request.getPart("image");
-        long fileSize = imagePart.getSize();
-        // System.err.println("@may: image fileSize = "+fileSize);
 
-        // System.err.println("@may: Get the profile part");
-        // Get the profile part
-        String profileJson = request.getParameter("profile");
-        if (profileJson == null || profileJson.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Profile data is missing");
-            return;
-        }
-        System.err.println("@may: profileJson = "+profileJson);
-        
         try (Connection conn = getDatabaseConnection()) {
-            // Assuming you have a table `albums` and columns `album_id`, `name`, `artist`, `release_year`, `image_size`
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO albums (album_id, name, artist, release_year, image_size) VALUES (?, ?, ?, ?, ?)");
-    
-            // Extract album data from `profileJson` using ObjectMapper
-            Album album = objectMapper.readValue(profileJson, Album.class);
-    
-            stmt.setString(1, album.getAlbumID());
-            stmt.setString(2, album.getTitle());
-            stmt.setString(3, album.getArtist());
-            stmt.setString(4, album.getYear());
-            stmt.setLong(5, fileSize);
+            // Handle the image part
+            Part imagePart = request.getPart("image");
+            String imagePath = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString(); 
+            long fileSize = imagePart.getSize();
+
+            /* 
+            // Handle the profile part
+            Part profilePart = request.getPart("profile"); // Assuming 'profile' is sent as a part
+            if (profilePart == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Profile data is missing");
+                return;
+            }
+            AlbumsProfile profile = objectMapper.readValue(profilePart.getInputStream(), AlbumsProfile.class);
+*/
+            // Handle the profile fields
+            
+            Part profilePart = request.getPart("profile"); // Assuming 'profile' is sent as a part
+            if (profilePart == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Profile data is missing");
+                return;
+            }
+
+            // InputStream inputStream = profilePart.getInputStream();
+            // String json = new BufferedReader(new InputStreamReader(inputStream))
+            //             .lines().collect(Collectors.joining("\n"));
+
+            // System.err.println("Profile JSON String = " + json);
+
+
+            String profileString = request.getParameter("profile");
+            System.err.println("@profileString = " + profileString);
+            // AlbumsProfile profile = objectMapper.readValue(profileString, AlbumsProfile.class);
+
+            String[] lines = profileString.split("\n");
+            String artist = lines[1].split(": ")[1].trim();
+            String title = lines[2].split(": ")[1].trim();
+            String year = lines[3].split(": ")[1].trim();
+
+            AlbumsProfile profile = new AlbumsProfile(artist, title, year);
+
+            // Insert into database
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO albums (album_id, name, artist, release_year, image) VALUES (?, ?, ?, ?, ?)");
+
+            String albumID = UUID.randomUUID().toString();
+            stmt.setString(1, albumID);
+            stmt.setString(2, profile.getTitle());
+            stmt.setString(3, profile.getArtist());
+            stmt.setString(4, profile.getYear());
+            stmt.setString(5, imagePath); // Assuming you want to store the image size
             stmt.executeUpdate();
-    
+            System.err.println("$may: executeUpdate() is right!");
+
+
             // Respond with the new album ID and image size
-            Response res = new Response(album.getAlbumID(), String.valueOf(fileSize));
+            Response res = new Response(albumID, Long.toString(fileSize));
             response.setContentType("application/json; charset=UTF-8");
             response.setStatus(HttpServletResponse.SC_CREATED);
             objectMapper.writeValue(response.getOutputStream(), res);
+
         } catch (Exception e) {
             e.printStackTrace(); // Log the exception
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -114,11 +146,11 @@ public class AlbumServlet extends HttpServlet {
 
     private static class Response {
         private final String albumID;
-        private final String imageSize;
+        private final String image;
 
-        public Response(String albumID, String imageSize) {
+        public Response(String albumID, String image) {
             this.albumID = albumID;
-            this.imageSize = imageSize;
+            this.image = image;
         }
 
         public String getAlbumID() {
@@ -126,7 +158,7 @@ public class AlbumServlet extends HttpServlet {
         }
 
         public String getImageSize() {
-            return imageSize;
+            return image;
         }
     }
 }

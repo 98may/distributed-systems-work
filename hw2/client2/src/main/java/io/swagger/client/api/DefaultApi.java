@@ -247,7 +247,10 @@ public class DefaultApi {
             throw new ApiException("Missing the required parameter 'profile' when calling newAlbum(Async)");
         }
         
+        // System.err.println("@jenny: newAlbumCall begin");
         com.squareup.okhttp.Call call = newAlbumCall(image, profile, progressListener, progressRequestListener);
+        // System.err.println("@jenny: newAlbumCall done");
+        
         return call;
 
         
@@ -266,6 +269,7 @@ public class DefaultApi {
      */
     public ImageMetaData newAlbum(File image, AlbumsProfile profile) throws ApiException {
         ApiResponse<ImageMetaData> resp = newAlbumWithHttpInfo(image, profile);
+        // System.err.println("@may: newAlbum() resp = "+ resp.toString());
         return resp.getData();
     }
 
@@ -280,6 +284,8 @@ public class DefaultApi {
     public ApiResponse<ImageMetaData> newAlbumWithHttpInfo(File image, AlbumsProfile profile) throws ApiException {
         com.squareup.okhttp.Call call = newAlbumValidateBeforeCall(image, profile, null, null);
         Type localVarReturnType = new TypeToken<ImageMetaData>(){}.getType();
+        // System.err.println("@may: newAlbumWithHttpInfo() call = "+ call.toString());
+
         return apiClient.execute(call, localVarReturnType);
     }
 
