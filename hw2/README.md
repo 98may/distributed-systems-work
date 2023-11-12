@@ -96,6 +96,8 @@ aws ec2
 
 ```c
 // java servlet
+sudo mv ~/tmp/AlbumApp.war /usr/share/tomcat/webapps && sudo systemctl restart tomcat && systemctl status tomcat
+
 sudo mv ~/tmp/AlbumApp.war /usr/share/tomcat/webapps
   
 sudo systemctl restart tomcat

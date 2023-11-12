@@ -24,12 +24,46 @@ import java.sql.ResultSet;
 import java.util.*;
 import java.nio.file.Paths;
 
+import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.HikariConfig;
+
+
 @WebServlet("/albums/*")
 @MultipartConfig
 public class AlbumServlet extends HttpServlet {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private static HikariDataSource dataSource;
+    static {
+        try{
+            HikariConfig config = new HikariConfig();
+            config.setDriverClassName("com.mysql.cj.jdbc.Driver"); // key!!!
+
+            config.setJdbcUrl(Config.jdbcUrl); // Replace with your JDBC URL
+            config.setUsername(Config.username); // Replace with your username
+            config.setPassword(Config.password); // Replace with your password
+
+            // Additional HikariCP settings - adjust as necessary
+            config.setMaximumPoolSize(30); // Set the maximum pool size
+            config.setMinimumIdle(5); // Set the minimum number of idle connections HikariCP maintains in the pool
+            config.setIdleTimeout(600000); // Set the maximum time (in milliseconds) that a connection is allowed to sit idle in the pool
+            dataSource = new HikariDataSource(config);
+        }catch(Exception e){
+            e.printStackTrace(); 
+            System.err.println("@Error initializing HikariCP: " + e.getMessage());
+        }
+    }
+
+    private Connection getDatabaseConnection() throws SQLException {
+        if (dataSource == null) {
+            System.err.println("@@ayan DataSource is not initialized.");
+            throw new SQLException("DataSource is not initialized.");
+        }
+        return dataSource.getConnection();
+    }
+    
+/* 
     private Connection getDatabaseConnection() throws SQLException {
         try {
             Class.forName("com.mysql.jdbc.Driver"); // Ensure the JDBC driver is loaded.
@@ -37,7 +71,7 @@ public class AlbumServlet extends HttpServlet {
             e.printStackTrace(); // Handle exception: log it or throw an error.
         }
         return DriverManager.getConnection(Config.jdbcUrl, Config.username, Config.password);
-    }
+    }*/
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -109,7 +143,7 @@ public class AlbumServlet extends HttpServlet {
 
 
             String profileString = request.getParameter("profile");
-            System.err.println("@profileString = " + profileString);
+            // System.err.println("@profileString = " + profileString);
             // AlbumsProfile profile = objectMapper.readValue(profileString, AlbumsProfile.class);
 
             String[] lines = profileString.split("\n");
@@ -160,5 +194,13 @@ public class AlbumServlet extends HttpServlet {
         public String getImageSize() {
             return image;
         }
+    }
+
+    @Override
+    public void destroy() {
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+        }
+        super.destroy();
     }
 }

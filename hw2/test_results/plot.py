@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load data
-CLIENT_LOG_PATH = "/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results" + "/client4_better_log";
+CLIENT_LOG_PATH = "/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results";
 
 data = pd.read_csv(CLIENT_LOG_PATH+'/java_30_throughputs.csv')
 
@@ -38,7 +38,7 @@ plt.subplots_adjust(right=0.7)  # Adjust the right edge of the subplot
 plt.text(1.02, 0.5, metrics_text, transform=plt.gca().transAxes, fontsize=9, ha='left', va='center',
          bbox=dict(facecolor='none', edgecolor='black', boxstyle='round,pad=0.5'))
 
-output_image_path = CLIENT_LOG_PATH+'/java_30_throughputs2.png'
+output_image_path = CLIENT_LOG_PATH+'/java_30_throughputs.png'
 plt.savefig(output_image_path, format='png', dpi=300)
 
 
