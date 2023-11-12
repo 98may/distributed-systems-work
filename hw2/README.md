@@ -60,11 +60,25 @@ Here are some highlights:
 
 ## Appendix of Command
 
+(base) may@ayanmaos-m1-mbp Downloads % ssh -i "ec2_2.pem" root@ec2-54-221-189-103.compute-1.amazonaws.com
+Please login as the user "ec2-user" rather than the user "root".
+
+Connection to ec2-54-221-189-103.compute-1.amazonaws.com closed.
+
+
+
+
+
 local
 
 ```c
 // ssh to aws ec2
 /Users/may/Desktop/neu/cs6650_distributed/shortcuts/ssh_ec2.sh
+  
+  // chmod 400 ec2_2.pem
+  // ssh -i ec2_2.pem ec2-user@ec2-3-80-33-155.compute-1.amazonaws.com
+  ssh -i ec2_2.pem ec2-user@ec2-54-221-189-103.compute-1.amazonaws.com
+  
 
 // mysql to aws rdb
 mysql -h dsdatabase.ccfcharlh91s.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
@@ -88,6 +102,12 @@ scp -i /Users/may/Downloads/ec2_2.pem /Users/may/Desktop/neu/cs6650_distributed/
 `Usage: LoadTester <threadGroupSize> <numThreadGroups> <delay> [java|go]`
 // e.g.
 mvn clean install && mvn exec:java -Dexec.mainClass="com.jenniek.clienttest.LoadTester" -Dexec.args="10 30 2 java"
+  
+  
+  // plot throughput
+  conda activate base
+  /Users/may/anaconda3/bin/python 
+  /Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/plot.py
 ```
 
 
@@ -105,12 +125,21 @@ sudo systemctl stop tomcat
 systemctl status tomcat
   
 sudo vim /usr/share/tomcat/logs/catalina.out
-
+sudo tail /usr/share/tomcat/logs/catalina.out -n 200
+  
 // see log to debug java servlet
 sudo bash -c 'echo > /usr/share/tomcat/logs/catalina.out'
 sudo grep "album" /usr/share/tomcat/logs/catalina.out
   
 // go server
 ~/tmp/server
+  
+  
+// mysql to aws rdb
+mysql -h dsdatabase.ccfcharlh91s.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
+show databases;
+use ds_hw2_db;
+describe albums;
+select COUNT(*) from albums;
 ```
 
