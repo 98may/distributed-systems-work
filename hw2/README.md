@@ -82,6 +82,7 @@ local
 
 // mysql to aws rdb
 mysql -h dsdatabase.ccfcharlh91s.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
+  // pwd: 01234567
 
   /* java servlet */
 // local build java servlet in Maven project to generate the AlbumApp.war file
@@ -102,6 +103,8 @@ scp -i /Users/may/Downloads/ec2_2.pem /Users/may/Desktop/neu/cs6650_distributed/
 `Usage: LoadTester <threadGroupSize> <numThreadGroups> <delay> [java|go]`
 // e.g.
 mvn clean install && mvn exec:java -Dexec.mainClass="com.jenniek.clienttest.LoadTester" -Dexec.args="10 30 2 java"
+  
+mvn exec:java -Dexec.mainClass="com.jenniek.clienttest.LoadTester" -Dexec.args="10 30 2 java"
   
   
   // plot throughput
@@ -137,9 +140,11 @@ sudo grep "album" /usr/share/tomcat/logs/catalina.out
   
 // mysql to aws rdb
 mysql -h dsdatabase.ccfcharlh91s.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
+  // 01234567
 show databases;
 use ds_hw2_db;
 describe albums;
 select COUNT(*) from albums;
+SELECT * FROM albums ORDER BY RAND() LIMIT 20;
 ```
 
