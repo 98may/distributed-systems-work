@@ -1,13 +1,13 @@
 # distributed-systems-work
-Assignment1 Repo for CS6650 Building Scalable Distributed Systems 23fall@neu
+Assignments Repo for CS6650 Building Scalable Distributed Systems 23fall@neu
+
+Ayan Mao 2023 Nov
 
 https://gortonator.github.io/bsds-6650/assignments-2022/Assignment-1
 
-
+https://gortonator.github.io/bsds-6650/assignments-2022/Assignment-2
 
 Github link: https://github.com/98may/distributed-systems-work/ 
-
-
 
 
 
@@ -15,59 +15,183 @@ Github link: https://github.com/98may/distributed-systems-work/
 
 
 
-## 1: info
-
-my aws ec2 ip address: `3.80.33.155:8080`
-
-shortcuts:
-
-Go get : http://3.80.33.155:8081/IGORTON/AlbumStore/1.0.0/albums/1
-
-Java get: http://3.80.33.155:8080/AlbumApp/albums/2
-
-## 2: client design
-
-key1: Use ThreadPool to group threads
-
-key2: Use count down latch to graceful wait for threads to finish
 
 
 
-![diagram_loadTester](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/diagram_loadTester.png
 
-<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/uml_loadTester.png" alt="uml_loadTester" style="zoom:50%;" />
 
-## 3: test results
+
+## 1: Overview
+
+### 1.1: milestones
+
+1) add analytics
+
+2) add persist database - AWS RDS + MySQL
+
+3) use multiple servers with load balancers - AWS EC2 + ALB
+
+4) fine tune AWS args
+
+### 1.2: code design
+
+<img src="/Users/may/Library/Application Support/typora-user-images/Screenshot 2023-11-25 at 9.15.52 PM.png" alt="Screenshot 2023-11-25 at 9.15.52 PM" style="zoom:50%;" />
+
+##### loadTester.java
+
+loadTester is the main java class to handle tests,
+ `parse` to set up args from `Usage: LoadTester <threadGroupSize> <numThreadGroups> <delay> [java|go]`,
+
+ `startUp` to make sure the server on aws works, 
+
+and then `mainLoad` send out the major requests.
+
+```java
+    public static void main(String[] args) {
+        LoadTester loadTester = new LoadTester();
+        loadTester.parse(args);
+        loadTester.startUp();
+        loadTester.mainLoad();
+    }
+```
+
+##### ApiTask.java
+
+implements `runnable`
+
+as a single thread unit to send one pair of post and get requests
+
+##### SendGetRequests.java
+
+implements `runnable`
+
+as a single thread unit to send one get request for main's `startUp`, like half of the `ApiTask.java`
+
+##### Utilities.java
+
+mainly the Utilitiy functions for logging and numbers
+
+##### Config.java
+
+set up the public static final arguments like `INITIAL_THREAD_COUNT`, `CLIENT_LOG_PATH` and `javaServletAddress`
+
+### 1.3: key info
+
+##### AWS EC2
+
+<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/aws_ec2.png" alt="aws_ec2" style="zoom:50%;" />
+
+##### AWS ALB
+
+<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/aws_alb.png" alt="aws_alb" style="zoom:50%;" />
+
+##### AWS RDS
+
+<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/aws_rds.png" alt="aws_rds" style="zoom:50%;" />
+
+##### server address
+
+```java
+public static final String javaServletAddress = "http://3.80.33.155:8080/AlbumApp";
+public static final String javaServletAddress2 = "http://54.221.189.103:8080/AlbumApp";
+public static final String goServerAddress = "http://3.80.33.155:8081/IGORTON/AlbumStore/1.0.0";
+```
+
+
+
+## 2: Database
+
+#### 2.1: choice
+
+AWS RDS + MySQL 8.0.33
+
+<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/aws_rds.png" alt="aws_rds" style="zoom:50%;" />
+
+#### 2.2: data model 
+
+table: albums
+
+field: album_i d(PK), name, artist, release_year, image
+
+<img src="/Users/may/Library/Application Support/typora-user-images/Screenshot 2023-11-25 at 9.07.25 PM.png" alt="Screenshot 2023-11-25 at 9.07.25 PM" style="zoom:50%;" />
+
+#### 2.3: results
+
+simple postman test succeeded:
+
+<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_result_details/db_pic/db_postman.png" alt="db_postman" style="zoom:50%;" />
+
+
+
+As you can see in the graph, it could have **millions** of records in the albums table.
+
+![db_after](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/db_after.png)
+
+![db_details](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/db_details.png)
+
+## 3: single server results
 
 Complete test results under /test_results folder
 Here are some highlights:
 
-#### Java Servlet
+### Java Servlet
 
-<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results/java_30_tp1863.png" alt="java_30_tp1863" style="zoom:50%;" />
+##### 10
 
-<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results/java_20_tp1156.png" alt="java_20_tp1156" style="zoom:50%;" />
+<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/10_tp816.png" alt="10_tp816" style="zoom:50%;" />
 
-### Go Server
+##### 20
 
-<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results/go_30_tp1075.png" alt="go_30_tp1075" style="zoom:50%;" />
+![20_tp1302](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/20_tp1302.png)
 
-### Plot of throughput by time
+##### 30
 
-![java_30_throughputs](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw1/test_results/java_30_throughputs.png)
+![30_tp1526](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/30_tp1526.png)
 
 
 
-## Appendix of Command
 
-(base) may@ayanmaos-m1-mbp Downloads % ssh -i "ec2_2.pem" root@ec2-54-221-189-103.compute-1.amazonaws.com
+
+## 4: load balanced servers results
+
+##### simple tomcat test passed
+
+![alb:](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_result_details/alb_pic/alb:.png)
+
+##### simple alb get test passed
+
+<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_result_details/alb_pic/alb_get.png" alt="alb_get" style="zoom:50%;" />
+
+## 5: tuned results
+
+After tune rds, throughput increased from 1117 to 1595, which is 42.8% improvements, great!
+
+##### some tune details
+
+![tune_rds](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/tune_rds.png)
+
+##### before tune
+
+![beforeTune_CPU](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/beforeTune_CPU.png)
+
+![beforeTune_rds](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/beforeTune_rds.png)
+
+![beforeTune_RW](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/beforeTune_RW.png)
+
+##### after tune
+
+![afterTune_CPU](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/afterTune_CPU.png)
+
+![afterTune_rds](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/afterTune_rds.png)
+
+![afterTune_RW](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/afterTune_RW.png)
+
+
+
+## 6: Appendix of Command
+
+
 Please login as the user "ec2-user" rather than the user "root".
-
-Connection to ec2-54-221-189-103.compute-1.amazonaws.com closed.
-
-
-
-
 
 local
 
