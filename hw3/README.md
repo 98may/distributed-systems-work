@@ -27,15 +27,17 @@ Github link: https://github.com/98may/distributed-systems-work/
 
 ### 1.1: milestones
 
-1) update 
+1) update Java server to support album review - like and dislike
 
-2) add persist database - AWS RDS + MySQL
+2) update client to send posts (4 post per thread = 1 new album + 2 like + 1 dislike)
 
-3) use multiple servers with load balancers - AWS EC2 + ALB
+3) baseline tests without MQ
 
-4) fine tune AWS args
+4) update server with RabbitMQ
 
-### 1.2: code design
+5) real tests with RabbitMQ
+
+### 1.2: client code design
 
 <img src="/Users/may/Library/Application Support/typora-user-images/Screenshot 2023-11-25 at 9.15.52 PM.png" alt="Screenshot 2023-11-25 at 9.15.52 PM" style="zoom:50%;" />
 
@@ -58,13 +60,9 @@ and then `mainLoad` send out the major requests.
 
 implements `runnable`
 
-as a single thread unit to send four post requests: 1 post album, 
+as a single thread unit to send 4 post requests:         
 
-##### SendGetRequests.java
-
-implements `runnable`
-
-as a single thread unit to send one get request for main's `startUp`, like half of the `ApiTask.java`
+// 4 requests per thread: POST a new album and image + POST two likes and one dislike for the album. (4 = 1 album + 2 like + 1dislike)
 
 ##### Utilities.java
 
@@ -74,26 +72,52 @@ mainly the Utilitiy functions for logging and numbers
 
 set up the public static final arguments like `INITIAL_THREAD_COUNT`, `CLIENT_LOG_PATH` and `javaServletAddress`
 
-### 1.3: key info
+Change this from 1000 to 100 `    public static final int LOAD_TEST_REQUESTS_PER_THREAD = 100; ` as this hw3 says "To reduce the new album write load, Just write 100 new albums per thread iteration instead of 1000".
+
+### 1.3: server design with RabbitMQ
+
+#### 1) add review servlet
+
+![Screenshot 2023-12-03 at 10.53.06 PM](/Users/may/Library/Application Support/typora-user-images/Screenshot 2023-12-03 at 10.53.06 PM.png)
+
+```java
+// AlbumReviewServlet.java
+@WebServlet("/review/*")
+public class AlbumReviewServlet extends HttpServlet {
+    // implementation for handling like/dislike
+
+// AlbumServlet.java
+@WebServlet("/albums/*")
+@MultipartConfig
+public class AlbumServlet extends HttpServlet {
+```
+
+#### 2) enable RabbitMQ
+
+use producer and consumer
+
+
+
+<img src="/Users/may/Library/Application Support/typora-user-images/Screenshot 2023-12-03 at 10.55.12 PM.png" alt="Screenshot 2023-12-03 at 10.55.12 PM" style="zoom:50%;" />
+
+<img src="/Users/may/Library/Mobile Documents/com~apple~CloudDocs/.Trash/Screenshot 2023-12-03 at 9.41.58 PM.png" alt="Screenshot 2023-12-03 at 9.41.58 PM" style="zoom:50%;" />
+
+
+
+### 1.4: key info
 
 ##### AWS EC2
 
-<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/aws_ec2.png" alt="aws_ec2" style="zoom:50%;" />
+delete load balancer from hw2, so only use one AWS EC2
 
-##### AWS ALB
+![Screenshot 2023-12-03 at 10.56.05 PM](/Users/may/Library/Application Support/typora-user-images/Screenshot 2023-12-03 at 10.56.05 PM.png)
 
-<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/aws_alb.png" alt="aws_alb" style="zoom:50%;" />
 
-##### AWS RDS
-
-<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/aws_rds.png" alt="aws_rds" style="zoom:50%;" />
 
 ##### server address
 
 ```java
 public static final String javaServletAddress = "http://3.80.33.155:8080/AlbumApp";
-public static final String javaServletAddress2 = "http://54.221.189.103:8080/AlbumApp";
-public static final String goServerAddress = "http://3.80.33.155:8081/IGORTON/AlbumStore/1.0.0";
 ```
 
 
@@ -104,90 +128,63 @@ public static final String goServerAddress = "http://3.80.33.155:8081/IGORTON/Al
 
 AWS RDS + MySQL 8.0.33
 
-<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/aws_rds.png" alt="aws_rds" style="zoom:50%;" />
-
 #### 2.2: data model 
+
+alter the albums table in hw2 and clear it in the beginning for better performance
 
 table: albums
 
-field: album_i d(PK), name, artist, release_year, image
+field: album_i d(PK), name, artist, release_year, image, **likes, dislikes**
 
-<img src="/Users/may/Library/Application Support/typora-user-images/Screenshot 2023-11-25 at 9.07.25 PM.png" alt="Screenshot 2023-11-25 at 9.07.25 PM" style="zoom:50%;" />
+<img src="/Users/may/Desktop/db_schema.png" alt="db_schema" style="zoom:50%;" />
+
+init albums table example:
+
+<img src="/Users/may/Desktop/db_init.png" alt="db_init" style="zoom:50%;" />
 
 #### 2.3: results
 
 simple postman test succeeded:
 
-<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_result_details/db_pic/db_postman.png" alt="db_postman" style="zoom:50%;" />
+<img src="/Users/may/Desktop/postman_test.png" alt="postman_test" style="zoom:50%;" />
 
+As you can see in the graph, it could have hundreds of thousands of records in the albums table.
 
+<img src="/Users/may/Desktop/Screenshot 2023-12-03 at 10.38.29 PM.png" alt="Screenshot 2023-12-03 at 10.38.29 PM" style="zoom:50%;" />
 
-As you can see in the graph, it could have **millions** of records in the albums table.
+## 3: test results
 
-![db_after](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/db_after.png)
+baseline test result without MQ
 
-![db_details](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/db_details.png)
+<img src="/Users/may/Desktop/res_withoutMQ_tp116.png" alt="res_withoutMQ_tp116" style="zoom:50%;" />
 
-## 3: single server results
+<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw3/test_results/java_30_throughputs_noMQ.png" alt="java_30_throughputs_noMQ" style="zoom:24%;" />
 
-Complete test results under /test_results folder
-Here are some highlights:
+real test result with RabbitMQ enabled
 
-### Java Servlet
-
-##### 10
-
-<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/10_tp816.png" alt="10_tp816" style="zoom:50%;" />
-
-##### 20
-
-![20_tp1302](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/20_tp1302.png)
-
-##### 30
-
-![30_tp1526](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/30_tp1526.png)
+```java
+(base) may@ayanmaos-m1-mbp client % mvn clean install && mvn exec:java -Dexec.mainClass="com.jenniek.clienttest.LoadTester" -Dexec.args="10 30 2 java"
+```
 
 
 
 
 
-## 4: load balanced servers results
-
-##### simple tomcat test passed
-
-![alb:](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_result_details/alb_pic/alb:.png)
-
-##### simple alb get test passed
-
-<img src="/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_result_details/alb_pic/alb_get.png" alt="alb_get" style="zoom:50%;" />
-
-## 5: tuned results
-
-After tune rds, throughput increased from 1117 to 1595, which is 42.8% improvements, great!
-
-##### some tune details
-
-![tune_rds](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/tune_rds.png)
-
-##### before tune
-
-![beforeTune_CPU](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/beforeTune_CPU.png)
-
-![beforeTune_rds](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/beforeTune_rds.png)
-
-![beforeTune_RW](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/beforeTune_RW.png)
-
-##### after tune
-
-![afterTune_CPU](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/afterTune_CPU.png)
-
-![afterTune_rds](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/afterTune_rds.png)
-
-![afterTune_RW](/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/hw2_tune/afterTune_RW.png)
 
 
 
-## 6: Appendix of Command
+
+
+
+
+
+
+
+
+
+
+
+## 4: Appendix of Command
 
 
 Please login as the user "ec2-user" rather than the user "root".
