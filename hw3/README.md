@@ -1,11 +1,13 @@
 # distributed-systems-work
 Assignments Repo for CS6650 Building Scalable Distributed Systems 23fall@neu
 
-Ayan Mao 2023 Nov
+Ayan Mao 2023 Dec
 
 https://gortonator.github.io/bsds-6650/assignments-2022/Assignment-1
 
 https://gortonator.github.io/bsds-6650/assignments-2022/Assignment-2
+
+3
 
 Github link: https://github.com/98may/distributed-systems-work/ 
 
@@ -212,7 +214,7 @@ mysql -h dsdatabase.ccfcharlh91s.us-east-1.rds.amazonaws.com -P 3306 -u admin -p
 // local build java servlet in Maven project to generate the AlbumApp.war file
 mvn clean install
 // scp java servlet - AlbumApp.war to aws ec2
-scp -i /Users/may/Downloads/ec2_2.pem /Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/java_servlet/AlbumApp/target/AlbumApp.war ec2-user@ec2-3-80-33-155.compute-1.amazonaws.com:~/tmp
+scp -i /Users/may/Downloads/ec2_2.pem /Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw3/java_servlet/AlbumApp/target/AlbumApp.war ec2-user@ec2-3-80-33-155.compute-1.amazonaws.com:~/tmp
 
   
   /* Go server */
@@ -235,6 +237,8 @@ mvn exec:java -Dexec.mainClass="com.jenniek.clienttest.LoadTester" -Dexec.args="
   conda activate base
   /Users/may/anaconda3/bin/python 
   /Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results/plot.py
+  
+  
 ```
 
 
@@ -270,5 +274,17 @@ use ds_hw2_db;
 describe albums;
 select COUNT(*) from albums;
 SELECT * FROM albums ORDER BY RAND() LIMIT 20;
+
+ALTER TABLE albums
+ADD COLUMN likes INT DEFAULT 0,
+ADD COLUMN dislikes INT DEFAULT 0;
+
+INSERT INTO albums (album_id, name, artist, release_year, image, likes, dislikes) VALUES ('1', 'offers', 'Ayan', 2023, NULL, 0, 0);
+
+INSERT INTO albums (album_id, name, artist, release_year, image, likes, dislikes) VALUES ('2', 'offers', 'Ayan', 2023, 'nmtb.jpg', 100, 0);
+
+INSERT INTO albums (album_id, name, artist, release_year, image, likes, dislikes) VALUES ('3', 'offers3', 'Ayan3', 2023, 'nmtb.jpg', 300, 1);
+
+INSERT INTO albums (album_id, name, artist, release_year, image, likes, dislikes) VALUES ('1230', 'offers1230', 'Ayan1230', 1998, 'nmtb.jpg', 12300, 50);
 ```
 
