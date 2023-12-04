@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.*;
 
 public class LoadTester {
-    private ConcurrentLinkedQueue<Long> GET_latencies = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<Long> POST_REVIEW_latencies = new ConcurrentLinkedQueue<>();
     private ConcurrentLinkedQueue<Long> POST_latencies = new ConcurrentLinkedQueue<>();
     private AtomicLong requestCounter = new AtomicLong(0);
     private AtomicLong failedRequestCounter = new AtomicLong(0);
@@ -26,7 +26,7 @@ public class LoadTester {
     public static void main(String[] args) {
         LoadTester loadTester = new LoadTester();
         loadTester.parse(args);
-        loadTester.startUp();
+        // loadTester.startUp();
         loadTester.mainLoad();
     }
 
@@ -61,31 +61,8 @@ public class LoadTester {
         }
     }
 
-    private void startUp(){
-        System.out.println("====== Start startup Phase =====");
-        System.out.println(Utilities.getFormattedDate());
-        long t1 = System.currentTimeMillis();
-
-        ExecutorService mainExecutor = Executors.newFixedThreadPool(Config.INITIAL_THREAD_COUNT);
-        for (int i = 0; i < Config.INITIAL_THREAD_COUNT; i++) {
-            mainExecutor.execute(new SendGetRequests(IPAddr, Config.INIT_REQUESTS_PER_THREAD));
-        }
-        mainExecutor.shutdown();
-        try {
-            mainExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        long t2 = System.currentTimeMillis();
-        System.out.println(String.format("Init Phase - walltime = %d mill seconds", t2-t1));
-        System.out.println(String.format("Init Phase - throughput =  %d", (Config.INITIAL_THREAD_COUNT * Config.INIT_REQUESTS_PER_THREAD * 1000)/(t2-t1)));
-        System.out.println(Utilities.getFormattedDate());
-        System.out.println("====== End startup Phase =====");
-    }
-
     private void mainLoad(){
-        System.out.println("\n====== Start Main Load Phase ======");
+        System.out.println("\n====== Start hw3 Main Load Phase ======");
         System.out.println(Utilities.getFormattedDate());
         long startTime = System.currentTimeMillis();
 
@@ -103,7 +80,10 @@ public class LoadTester {
         for (int i = 0; i < numThreadGroups; i++) {
             for (int j = 0; j < threadGroupSize; j++) {
                 // Create a new thread with an ApiTask instance and start the thread
-                Thread t = new Thread(new ApiTask(IPAddr, Config.LOAD_TEST_REQUESTS_PER_THREAD, latch, server_type, s_numThreadGroups, GET_latencies, POST_latencies, requestCounter, failedRequestCounter));
+                // make POST_latencies record "POST a new album and image"
+                // mkae POST_REVIEW_latencies record "POST two likes and one dislike for the album" 
+                // GET_latencies deprecated
+                Thread t = new Thread(new ApiTask(IPAddr, Config.LOAD_TEST_REQUESTS_PER_THREAD, latch, server_type, s_numThreadGroups, POST_latencies, POST_REVIEW_latencies, requestCounter, failedRequestCounter));
                 t.start();
             }
             try {
@@ -125,10 +105,10 @@ public class LoadTester {
         // 4. calculate and output results
         long endTime = System.currentTimeMillis();
 
-        Long[] getLatenciesBoxed = GET_latencies.toArray(new Long[0]);
-        long[] getLatencies = new long[getLatenciesBoxed.length];
-        for (int i = 0; i < getLatenciesBoxed.length; i++) {
-            getLatencies[i] = getLatenciesBoxed[i];
+        Long[] postReviewLatenciesBoxed = POST_REVIEW_latencies.toArray(new Long[0]);
+        long[] postReviewLatencies = new long[postReviewLatenciesBoxed.length];
+        for (int i = 0; i < postReviewLatenciesBoxed.length; i++) {
+            postReviewLatencies[i] = postReviewLatenciesBoxed[i];
         }
 
         Long[] postLatenciesBoxed = POST_latencies.toArray(new Long[0]);
@@ -138,7 +118,8 @@ public class LoadTester {
         }
         
         long wallTime = (endTime - startTime) / 1000;
-        long totalRequests = (long) threadGroupSize * numThreadGroups * Config.LOAD_TEST_REQUESTS_PER_THREAD * 2;  // 2 for both POST and GET
+        // 4 requests per thread: POST a new album and image + POST two likes and one dislike for the album.
+        long totalRequests = (long) threadGroupSize * numThreadGroups * Config.LOAD_TEST_REQUESTS_PER_THREAD * 4;  // 4 POST per thread
         long failedRequests = failedRequestCounter.get();
         long throughput = totalRequests / wallTime;
         System.out.println("totalRequests: " + totalRequests +", Failure Rate: " + (failedRequests*1.0 / totalRequests));
@@ -147,12 +128,12 @@ public class LoadTester {
         System.out.println(Utilities.getFormattedDate(startTime) + " - " + Utilities.getFormattedDate(endTime));  
         System.out.println("Wall Time: " + wallTime + " seconds");        
         System.out.println("Throughput: " + throughput + " requests/second");
-        Utilities.calculateStats(getLatencies, "GET");
-        Utilities.calculateStats(postLatencies, "POST");
+        Utilities.calculateStats(postReviewLatencies, "POST ALBUM REVIEW");
+        Utilities.calculateStats(postLatencies, "POST ALBUM");
         List<Long> throughputList = new ArrayList<>(throughputs);
         Utilities.writeThroughputToFile(throughputList, server_type, s_numThreadGroups);
         System.out.println(Utilities.getFormattedDate());
-        System.out.println("====== End Main Load Phase =====");
+        System.out.println("====== End hw3 Main Load Phase =====");
         return;
     }
 
