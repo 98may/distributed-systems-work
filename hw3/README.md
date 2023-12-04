@@ -7,7 +7,7 @@ https://gortonator.github.io/bsds-6650/assignments-2022/Assignment-1
 
 https://gortonator.github.io/bsds-6650/assignments-2022/Assignment-2
 
-3
+https://gortonator.github.io/bsds-6650/assignments-2022/Assignment-3
 
 Github link: https://github.com/98may/distributed-systems-work/ 
 
@@ -27,7 +27,7 @@ Github link: https://github.com/98may/distributed-systems-work/
 
 ### 1.1: milestones
 
-1) add analytics
+1) update 
 
 2) add persist database - AWS RDS + MySQL
 
@@ -44,15 +44,12 @@ Github link: https://github.com/98may/distributed-systems-work/
 loadTester is the main java class to handle tests,
  `parse` to set up args from `Usage: LoadTester <threadGroupSize> <numThreadGroups> <delay> [java|go]`,
 
- `startUp` to make sure the server on aws works, 
-
 and then `mainLoad` send out the major requests.
 
 ```java
     public static void main(String[] args) {
         LoadTester loadTester = new LoadTester();
         loadTester.parse(args);
-        loadTester.startUp();
         loadTester.mainLoad();
     }
 ```
@@ -61,7 +58,7 @@ and then `mainLoad` send out the major requests.
 
 implements `runnable`
 
-as a single thread unit to send one pair of post and get requests
+as a single thread unit to send four post requests: 1 post album, 
 
 ##### SendGetRequests.java
 

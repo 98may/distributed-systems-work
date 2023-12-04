@@ -27,6 +27,8 @@ import java.util.concurrent.*;
 
 // optimize logging
 public class ApiTask implements Runnable {
+    private HttpClient httpClient; 
+    
     private final String basePath;
     private final int requestsPerThread;
     private final CountDownLatch latch;
@@ -58,13 +60,14 @@ POST two likes and one dislike for the album.
         this.POST_latencies = POST_latencies;
         this.requestCounter = requestCounter;
         this.failedRequestCounter = failedRequestCounter;
-    }
 
-    private void postReview(String albumID, String action) {
-        HttpClient httpClient = HttpClient.newBuilder()
+        this.httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_1_1)
             .connectTimeout(Duration.ofSeconds(10))
             .build();
+    }
+
+    private void postReview(String albumID, String action) {
     
         String url = basePath + "/review/" + action + "/" + albumID;
     

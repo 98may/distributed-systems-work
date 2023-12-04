@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load data
-CLIENT_LOG_PATH = "/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw2/test_results";
+CLIENT_LOG_PATH = "/Users/may/Desktop/neu/cs6650_distributed/distributed-systems-work/hw3/test_results";
 
 data = pd.read_csv(CLIENT_LOG_PATH+'/java_30_throughputs.csv')
 
@@ -12,7 +12,7 @@ plt.plot(data['Time(s)'], data['Throughput(req/s)'], marker='o', linestyle='-', 
 # Add labels and title
 plt.xlabel('Time (s)')
 plt.ylabel('Throughput (req/s)')
-plt.title('Throughput Over Time' +' of LoadTester 10 30 2 java 2')
+plt.title('Throughput Over Time' +' of LoadTester 10 30 2 java 2 w/ MQ')
 
 # Calculate metrics
 mean_throughput = data['Throughput(req/s)'].mean()
